@@ -530,29 +530,39 @@
     <div class="modal-hd">
       <div>
         <h3 id="modalDataTitle">Data &amp; backups</h3>
-        <p class="modal-sub">Everything is stored on this computer and backed up automatically.</p>
+        <p class="modal-sub">Everything stays on this computer and is backed up automatically.</p>
       </div>
       <button class="icon-btn" onclick="Modal.close('modalData')" aria-label="Close"><svg width="16" height="16"><use href="#i-x"/></svg></button>
     </div>
-    <div class="modal-bd">
+    <div class="modal-bd data-bd">
       <div class="data-card">
         <span class="data-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/><path d="M4 11.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg></span>
         <div class="data-main">
-          <span class="data-title">Saved on this computer <span class="data-ok">Protected</span></span>
+          <span class="data-title">Stored on this computer <span class="data-ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Protected</span></span>
           <span class="data-path" id="dataPath"></span>
-          <span class="data-meta"><span id="dataSize"></span> · last backup <span id="dataLast"></span> · <span id="dataCount"></span></span>
+          <span class="data-meta"><span id="dataSize"></span> · last backup <span id="dataLast"></span></span>
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="DataPanel.api.openFolder()">Open folder</button>
+        <button class="btn btn-soft btn-sm" onclick="DataPanel.api.openFolder()">Open folder</button>
       </div>
-      <p class="modal-info">Updating, rebuilding or reinstalling Tracker never touches this folder. Every save is written safely to disk. Backups are made as you work, when Tracker starts and when it closes, and the latest 30 are kept. If the data ever can't be read, Tracker restores the newest good backup on its own.</p>
-      <div class="col-builder-hd">
-        <span class="field-label">Backups</span>
-        <button class="btn btn-soft btn-sm" onclick="DataPanel.backupNow(this)">Back up now</button>
+
+      <ul class="data-points">
+        <li><span class="dp-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><span><b>Safe saving</b>Every change is written safely, so a crash or power cut can&#39;t damage your data.</span></li>
+        <li><span class="dp-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>Automatic backups</b>Made as you work, when Tracker starts and when it closes. The latest 30 are kept.</span></li>
+        <li><span class="dp-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></svg></span><span><b>Self-healing</b>If the data can&#39;t be read, Tracker restores the newest good backup on its own.</span></li>
+      </ul>
+      <p class="data-note">Updating or reinstalling Tracker never touches this folder.</p>
+
+      <div class="bk-hd">
+        <span class="field-label">Backups <span class="sb-count" id="dataCount">0</span></span>
+        <button class="btn btn-soft btn-sm" onclick="DataPanel.backupNow(this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Back up now
+        </button>
       </div>
       <div class="bk-list" id="dataBackups"></div>
     </div>
     <div class="modal-ft modal-ft-between">
-      <button class="btn btn-ghost" onclick="DataPanel.importFile()">Restore from file…</button>
+      <button class="btn btn-soft" onclick="DataPanel.importFile()">Restore from file…</button>
       <button class="rich-btn modal-primary" onclick="DataPanel.exportFile()"><span>Save a backup file…</span></button>
     </div>
   </div>

@@ -119,16 +119,8 @@ const Inbox = {
       Inbox._notified = true;
       const overdue = out.filter(i => i.overdue).length, due = out.length - overdue;
       const msg = [due && `${due} due today`, overdue && `${overdue} overdue`].filter(Boolean).join(' · ');
+      // Shown inside Tracker only; Tracker never sends system notifications.
       toast(`Reminders: ${msg}`, 'info');
-      try {
-        // Desktop app: a native notification branded as Tracker.
-        if (window.trackerDesktop?.notify) window.trackerDesktop.notify('Tracker reminders', `You have ${msg}.`);
-        else if ('Notification' in window) {
-          const show = () => new Notification('Tracker reminders', { body: `You have ${msg}.`, icon: 'assets/logo.png', silent: false });
-          if (Notification.permission === 'granted') show();
-          else if (Notification.permission !== 'denied') Notification.requestPermission().then(p => p === 'granted' && show());
-        }
-      } catch {}
     }
   },
 

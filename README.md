@@ -125,7 +125,7 @@ Tracker treats your data as the most important thing it holds.
 
 ## Updates
 
-Tracker checks for new versions shortly after it starts and a few times a day. When one is out, a small card in the sidebar tells you, and then it **waits for you**. Nothing is downloaded or installed until you choose.
+Tracker checks for new versions shortly after it starts and a few times a day. When one is out, Tracker shows a message and a small card in the sidebar, and then it **waits for you**. Tracker never sends system notifications; everything appears inside the app. Nothing is downloaded or installed until you choose.
 
 - **Windows installer:** click **Download** and keep working. When it's ready, click **Restart to update**. Your data is saved and backed up before the update installs.
 - **macOS and the portable .exe:** click **Download update** to get the new file, then open it. On a Mac, drag the new Tracker into Applications to replace the old one.
@@ -181,8 +181,8 @@ TRACKER_USER_DATA=/path/to/test-folder npm start
 2. Commit, then push a matching tag:
 
    ```bash
-   git tag v2.4.0
-   git push origin v2.4.0
+   git tag v2.4.1
+   git push origin v2.4.1
    ```
 
 The workflow checks that the tag matches the app version, builds every platform and publishes a GitHub Release with the installers and `SHA256SUMS.txt`. File names carry no version, so `releases/latest/download/...` links always point at the newest build.
@@ -231,12 +231,6 @@ src/main.swift     Optional native macOS shell (WKWebView), built with build_dmg
 <summary><b>The app starts without a window when run from VS Code's terminal</b></summary>
 
 VS Code's terminal sets an environment variable that makes the desktop runtime start in command-line mode. Clear it before `npm start`: run `set ELECTRON_RUN_AS_NODE=` on Windows or `unset ELECTRON_RUN_AS_NODE` on macOS.
-</details>
-
-<details>
-<summary><b>Notifications from a development build say "Tracker (development)"</b></summary>
-
-When you run from source, Tracker registers a "Tracker (development)" Start menu shortcut so Windows shows its name and logo on notifications. Installed builds use the normal "Tracker" shortcut.
 </details>
 
 <details>

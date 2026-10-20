@@ -30,6 +30,7 @@ const Updater = {
     let html = '';
     if (st.status === 'available') {
       if (!st.manual && (await Updater.dismissed()) === st.version) { Updater.hide(); return; }
+      if (prev?.status !== 'available') toast(`Tracker ${st.version} is available. See the card in the sidebar.`, 'info');
       html = `
         <div class="upd-hd"><span class="upd-ic">${icon('sparkle', 14, 1.8)}</span><span class="upd-title">Tracker ${escH(st.version)} is available</span>
           <button class="icon-btn icon-btn-xs" onclick="Updater.later()" title="Later" aria-label="Remind me later">${icon('x', 12, 2)}</button></div>
@@ -44,6 +45,7 @@ const Updater = {
         <span class="progress"><i style="width:${st.percent || 0}%"></i></span>
         <p class="upd-text">You can keep working. We'll ask before restarting.</p>`;
     } else if (st.status === 'ready') {
+      if (prev?.status !== 'ready') toast(`Tracker ${st.version} is ready to install.`, 'success');
       html = `
         <div class="upd-hd"><span class="upd-ic upd-ic-ready">${icon('check', 14, 2.2)}</span><span class="upd-title">Update ready</span></div>
         <p class="upd-text">Tracker ${escH(st.version)} is downloaded. Restart to finish. Your data is backed up first.</p>

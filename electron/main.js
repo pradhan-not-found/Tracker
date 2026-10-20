@@ -5,7 +5,7 @@
    bridge (sql.js, stored durably in the user's app-data folder,
    with automatic backups: see storage.js).
 ============================================================= */
-const { app, BrowserWindow, ipcMain, nativeTheme, shell, Menu, dialog, powerMonitor, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, nativeTheme, shell, Menu, dialog, powerMonitor } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { Storage } = require('./storage');
@@ -21,7 +21,9 @@ app.setName('Tracker');
 if (process.env.TRACKER_USER_DATA) app.setPath('userData', process.env.TRACKER_USER_DATA);
 
 const APP_ID = 'com.tracker.attendance';
-const ASSETS = path.join(__dirname, '..', 'assets');
+// Icons are unpacked next to the archive in installed builds (asarUnpack), because
+// Windows and macOS read them by file path and cannot look inside app.asar.
+const ASSETS = path.join(__dirname, '..', 'assets').replace(`app.asar${path.sep}`, `app.asar.unpacked${path.sep}`);
 // Windows wants the multi-size .ico for crisp taskbar/alt-tab icons.
 const APP_ICON = path.join(ASSETS, process.platform === 'win32' ? 'icon.ico' : 'icon.png');
 
@@ -100,10 +102,6 @@ ipcMain.handle('tracker:import-backup', async e => {
   return path.basename(filePaths[0]);
 });
 
-ipcMain.on('tracker:notify', (_e, { title, body } = {}) => {
-  if (typeof title === 'string' && typeof body === 'string') notify(title.slice(0, 120), body.slice(0, 300));
-});
-
 // ── updates ─────────────────────────────────────────────────
 ipcMain.handle('tracker:update-get', () => updates.state);
 ipcMain.handle('tracker:update-check', () => updates.check({ manual: true }));
@@ -162,7 +160,8 @@ function createWindow() {
   if (process.platform === 'win32') {
     mainWindow.setAppDetails({
       appId: APP_ID,
-      appIconPath: path.join(ASSETS, 'icon.ico'),
+      // Installed: Tracker.exe carries the icon itself. From source: the .ico file.
+      appIconPath: app.isPackaged ? process.execPath : path.join(ASSETS, 'icon.ico'),
       appIconIndex: 0,
       relaunchDisplayName: 'Tracker'
     });
@@ -221,46 +220,6 @@ function buildMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
-// Windows names notifications after the Start menu shortcut that carries the
-// app's ID. The installer creates one; when running from source or as the
-// portable .exe there is none, so Windows would show a generic name. Create a
-// Tracker shortcut with our icon so notifications always say "Tracker".
-function ensureWindowsShortcut() {
-  if (process.platform !== 'win32' || SELFTEST) return;
-  const portable = !!process.env.PORTABLE_EXECUTABLE_DIR;
-  if (app.isPackaged && !portable) return;
-  try {
-    const dir = path.join(app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs');
-    const lnk = path.join(dir, app.isPackaged ? 'Tracker.lnk' : 'Tracker (development).lnk');
-    const target = portable ? path.join(process.env.PORTABLE_EXECUTABLE_DIR, process.env.PORTABLE_EXECUTABLE_APP_FILENAME + '.exe') : process.execPath;
-    const opts = {
-      target,
-      args: app.isPackaged ? '' : `"${path.join(__dirname, '..')}"`,
-      description: 'Tracker',
-      icon: path.join(ASSETS, 'icon.ico'),
-      iconIndex: 0,
-      appUserModelId: APP_ID
-    };
-    if (!(app.isPackaged && fs.existsSync(lnk))) shell.writeShortcutLink(lnk, fs.existsSync(lnk) ? 'update' : 'create', opts);
-  } catch (err) { console.warn('Could not register the Tracker shortcut', err); }
-}
-
-// System notification that brings Tracker to the front when clicked.
-// Only the installed app notifies: development and test runs use the raw
-// runtime, which Windows would label with the runtime's own name.
-const NOTIFY = app.isPackaged ? !process.env.TRACKER_USER_DATA : !!process.env.TRACKER_DEV_NOTIFICATIONS;
-function notify(title, body) {
-  if (!NOTIFY || !Notification.isSupported()) return;
-  const n = new Notification({ title, body, icon: path.join(ASSETS, process.platform === 'win32' ? 'icon.ico' : 'icon.png'), silent: false });
-  n.on('click', () => {
-    if (!mainWindow) return;
-    if (mainWindow.isMinimized()) mainWindow.restore();
-    mainWindow.show();
-    mainWindow.focus();
-  });
-  n.show();
-}
-
 async function runSelfTest() {
   const done = (ok, detail) => {
     process.stdout.write(`TRACKER_SELFTEST ${ok ? 'OK' : 'FAIL'} ${JSON.stringify(detail)}
@@ -309,10 +268,8 @@ if (!SELFTEST && !app.requestSingleInstanceLock()) {
       iconPath: path.join(ASSETS, isMac ? 'icon-mac.png' : 'icon.png')
     });
     await openDatabase();
-    ensureWindowsShortcut();
     updates = new Updates({
-      beforeInstall: () => { storage.flush(); storage.backup('before-update'); },
-      notify
+      beforeInstall: () => { storage.flush(); storage.backup('before-update'); }
     });
     if (SELFTEST) return runSelfTest();
     buildMenu();

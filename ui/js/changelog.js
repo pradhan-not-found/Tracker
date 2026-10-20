@@ -7,6 +7,21 @@
 ============================================================= */
 const CHANGELOG = [
   {
+    "version": "2.4.1",
+    "date": "2026-10-20",
+    "title": "Tracker 2.4.1",
+    "summary": "The Tracker icon everywhere, and no more system pop-ups.",
+    "highlights": [],
+    "improvements": [
+      "Reminders and update news now appear only inside Tracker, as a message and in the sidebar. Tracker no longer sends system notifications.",
+      "A cleaner Data and backups panel."
+    ],
+    "fixes": [
+      "The Tracker icon now shows in the Windows taskbar for installed copies.",
+      "The macOS About window shows the Tracker icon."
+    ]
+  },
+  {
     "version": "2.4.0",
     "date": "2026-10-20",
     "title": "Welcome to Tracker 2.4",

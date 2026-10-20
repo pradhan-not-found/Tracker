@@ -15,16 +15,18 @@ const DataPanel = {
   async render() {
     const info = await DataPanel.api.info();
     const reasonLabel = { launch: 'At launch', auto: 'Automatic', exit: 'When Tracker closed', 'before-update': 'Before an update', manual: 'Manual', 'before-restore': 'Before a restore', 'before-import': 'Before an import' };
-    document.getElementById('dataPath').textContent = info.dbPath;
+    const pathEl = document.getElementById('dataPath');
+    pathEl.textContent = info.dataDir;
+    pathEl.title = info.dbPath;
     document.getElementById('dataSize').textContent = fmtBytes(info.size);
     document.getElementById('dataLast').textContent = info.lastBackupAt ? timeAgo(new Date(info.lastBackupAt).toISOString()) : 'Never';
-    document.getElementById('dataCount').textContent = plural(info.backups.length, 'backup');
+    document.getElementById('dataCount').textContent = info.backups.length;
     document.getElementById('dataBackups').innerHTML = info.backups.length ? info.backups.map(b => `
       <div class="bk-row">
         <span class="bk-ic">${icon('clock', 14)}</span>
         <span class="bk-main"><span class="bk-date">${escH(new Date(b.mtime).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }))}</span>
-          <span class="bk-sub">${escH(reasonLabel[b.reason] || 'Backup')} · ${fmtBytes(b.size)}</span></span>
-        <button class="btn btn-soft btn-sm" onclick="DataPanel.restore('${escA(b.name)}')">Restore</button>
+          <span class="bk-sub"><span class="bk-tag">${escH(reasonLabel[b.reason] || 'Backup')}</span>${fmtBytes(b.size)}</span></span>
+        <button class="btn btn-ghost btn-sm bk-restore" onclick="DataPanel.restore('${escA(b.name)}')">Restore</button>
       </div>`).join('')
       : `<div class="act-empty"><span class="act-empty-ic">${icon('clock', 16)}</span><span>No backups yet. They're made automatically as you work and when Tracker closes.</span></div>`;
   },
