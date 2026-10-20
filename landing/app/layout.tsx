@@ -70,7 +70,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={switzer.variable}>
+    <html lang="en" className={switzer.variable} suppressHydrationWarning>
       <head>
         {/* Enables reveal animations only when JS runs, so content is never hidden without it. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />

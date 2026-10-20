@@ -196,8 +196,7 @@
 }
 .seg button:focus-visible,
 .rich-btn:focus-visible,
-.app-ui button:focus-visible,
-.dt-input:focus-visible {
+.app-ui button:focus-visible {
   outline: 2px solid #18181b;
   outline-offset: 2px;
 }
@@ -437,9 +436,13 @@
 .dt-add {
   grid-template-columns: 36px minmax(0, 1fr) auto;
   background: var(--surface-1);
+  transition: background-color 0.15s ease;
 }
-.dt-add .dt-idx svg {
-  color: var(--subtle);
+.dt-add:focus-within {
+  background: #fff;
+}
+.dt-add:focus-within .dt-idx svg {
+  color: var(--text);
 }
 .dt-input {
   height: 44px;
@@ -450,6 +453,11 @@
   font-size: 13px;
   color: var(--text);
   outline: none;
+}
+.dt-input:focus,
+.dt-input:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 .dt-input::placeholder {
   color: var(--subtle);
