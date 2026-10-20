@@ -19,3 +19,17 @@ export const SITE_TITLE = 'Tracker: private, local-first databases for Windows a
 export const SITE_DESCRIPTION =
   'Tracker is a free, private desktop app for building your own databases: to-dos, marks, attendance and inventory, with table, calendar and dashboard views.'
 export const THEME_BLUE = '#C8DDFC'
+
+/** Only the production deployment is indexed; Vercel preview deploys are kept out of search results. */
+export const INDEXABLE = process.env.VERCEL_ENV ? process.env.VERCEL_ENV === 'production' : true
+
+export const AUTHOR = {
+  name: 'Souradeep Pradhan',
+  url: 'https://github.com/pradhan-not-found',
+} as const
+
+/** Search engine verification codes, set as environment variables on Vercel (optional). */
+export const VERIFICATION = {
+  google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+  bing: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || undefined,
+}

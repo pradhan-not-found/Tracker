@@ -47,3 +47,7 @@ All internal links and assets respect the base path; without it the site is serv
 | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | Vercel production URL, then preview URL, then `http://localhost:3000` | Absolute URL used for canonical, Open Graph, sitemap, robots and JSON-LD |
 | `NEXT_PUBLIC_BASE_PATH` | empty | Sub-path the site is served from |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | none | Google Search Console verification code (the `content` value of the HTML tag method) |
+| `NEXT_PUBLIC_BING_SITE_VERIFICATION` | none | Bing Webmaster Tools verification code |
+
+Only the production deployment is indexed. Vercel preview deployments are automatically marked `noindex` and their `robots.txt` blocks crawlers, so search engines never list duplicate copies.

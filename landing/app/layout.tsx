@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
 import { RevealObserver } from '@/components/RevealObserver'
-import { REPO_URL } from '@/lib/downloads'
-import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL, THEME_BLUE } from '@/lib/site'
+import { RELEASES_URL } from '@/lib/downloads'
+import { AUTHOR, INDEXABLE, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL, THEME_BLUE, VERIFICATION } from '@/lib/site'
 import './globals.css'
 import './demo.css'
 
@@ -30,18 +30,31 @@ export const metadata: Metadata = {
     'inventory app',
     'Airtable alternative',
     'Excel alternative',
+    'offline database app',
+    'private to-do app',
+    'gradebook app',
+    'free database software',
     'Windows',
     'macOS',
   ],
-  authors: [{ name: 'Tracker', url: REPO_URL }],
-  creator: 'Tracker',
-  publisher: 'Tracker',
+  authors: [{ name: AUTHOR.name, url: AUTHOR.url }],
+  creator: AUTHOR.name,
+  publisher: AUTHOR.name,
   category: 'productivity',
-  alternates: { canonical: './' },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 },
+  alternates: {
+    canonical: './',
+    types: { 'application/atom+xml': [{ url: `${RELEASES_URL}.atom`, title: 'Tracker releases' }] },
+  },
+  robots: INDEXABLE
+    ? {
+        index: true,
+        follow: true,
+        googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 },
+      }
+    : { index: false, follow: false, googleBot: { index: false, follow: false } },
+  verification: {
+    google: VERIFICATION.google,
+    other: VERIFICATION.bing ? { 'msvalidate.01': VERIFICATION.bing } : undefined,
   },
   formatDetection: { telephone: false, email: false, address: false },
   openGraph: {
