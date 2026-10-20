@@ -27,12 +27,16 @@ jobs:
             target: --win --x64
             files: |
               dist/*.exe
+              dist/*.blockmap
+              dist/latest.yml
           - name: macOS
             os: macos-14
             target: --mac --arm64 --x64
             files: |
               dist/*.dmg
               dist/*.zip
+              dist/*.blockmap
+              dist/latest-mac.yml
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -68,6 +72,45 @@ jobs:
       - name: List artifacts
         shell: bash
         run: ls -lh dist
+
+      # Launch the real packaged app: it opens its database, loads the UI,
+      # writes and reads a value, then exits. A broken build fails here.
+      - name: Self-test Windows build
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          export TRACKER_SELFTEST=1 TRACKER_USER_DATA="$RUNNER_TEMP/tracker-selftest"
+          ./dist/win-unpacked/Tracker.exe | tee selftest.log
+          grep -q "TRACKER_SELFTEST OK" selftest.log
+
+      - name: Verify and self-test macOS DMGs
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euo pipefail
+          for dmg in dist/Tracker-macos-arm64.dmg dist/Tracker-macos-x64.dmg; do
+            echo "::group::$dmg"
+            hdiutil verify "$dmg"
+            mnt="$(mktemp -d)"
+            hdiutil attach "$dmg" -nobrowse -readonly -mountpoint "$mnt" >/dev/null
+            test -d "$mnt/Tracker.app"
+            test -L "$mnt/Applications"
+            codesign --verify --deep --strict --verbose=2 "$mnt/Tracker.app"
+            cp -R "$mnt/Tracker.app" "$RUNNER_TEMP/"
+            hdiutil detach "$mnt" >/dev/null
+            bin="$RUNNER_TEMP/Tracker.app/Contents/MacOS/Tracker"
+            run=("$bin")
+            if [[ "$dmg" == *x64* ]]; then
+              if arch -x86_64 /usr/bin/true 2>/dev/null; then run=(arch -x86_64 "$bin")
+              else echo "::warning::Rosetta unavailable; skipping the Intel launch test (DMG and signature verified)"; run=(); fi
+            fi
+            if (( ${#run[@]} )); then
+              TRACKER_SELFTEST=1 TRACKER_USER_DATA="$RUNNER_TEMP/selftest-$(basename "$dmg" .dmg)" "${run[@]}" | tee selftest.log
+              grep -q "TRACKER_SELFTEST OK" selftest.log
+            fi
+            rm -rf "$RUNNER_TEMP/Tracker.app"
+            echo "::endgroup::"
+          done
 
       - name: Upload ${{ matrix.name }} artifacts
         uses: actions/upload-artifact@v4

@@ -7,6 +7,13 @@ contextBridge.exposeInMainWorld('trackerDesktop', {
   setTheme: (mode) => ipcRenderer.send('tracker:theme', mode),
   windowAction: (action) => ipcRenderer.send('tracker:window', action),
   onWindowState: (cb) => ipcRenderer.on('tracker:window-state', (_e, state) => cb(state)),
+  updates: {
+    get: () => ipcRenderer.invoke('tracker:update-get'),
+    check: () => ipcRenderer.invoke('tracker:update-check'),
+    download: () => ipcRenderer.invoke('tracker:update-download'),
+    install: () => ipcRenderer.invoke('tracker:update-install'),
+    onState: (cb) => ipcRenderer.on('tracker:update-state', (_e, state) => cb(state))
+  },
   data: {
     info: () => ipcRenderer.invoke('tracker:data-info'),
     backupNow: () => ipcRenderer.invoke('tracker:backup-now'),

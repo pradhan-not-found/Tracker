@@ -9,6 +9,7 @@ const { app, BrowserWindow, ipcMain, nativeTheme, shell, Menu, dialog, powerMoni
 const path = require('path');
 const fs = require('fs');
 const { Storage } = require('./storage');
+const { Updates } = require('./updates');
 
 const isMac = process.platform === 'darwin';
 const isDev = process.argv.includes('--dev');
@@ -22,7 +23,12 @@ const ASSETS = path.join(__dirname, '..', 'assets');
 const APP_ICON = path.join(ASSETS, process.platform === 'win32' ? 'icon.ico' : 'icon.png');
 
 let storage = null;
+let updates = null;
 let mainWindow = null;
+
+// TRACKER_SELFTEST=1 launches the real app, opens the database, loads the UI
+// and checks that it can read and write, then exits 0 (CI smoke test).
+const SELFTEST = !!process.env.TRACKER_SELFTEST;
 
 // ─────────────────────────────────────────────────────────────
 // DATABASE
@@ -89,6 +95,12 @@ ipcMain.handle('tracker:import-backup', async e => {
   storage.replaceWith(fs.readFileSync(filePaths[0]), 'before-import');
   return path.basename(filePaths[0]);
 });
+
+// ── updates ─────────────────────────────────────────────────
+ipcMain.handle('tracker:update-get', () => updates.state);
+ipcMain.handle('tracker:update-check', () => updates.check({ manual: true }));
+ipcMain.handle('tracker:update-download', () => updates.download());
+ipcMain.handle('tracker:update-install', () => updates.install());
 
 ipcMain.handle('tracker:open-external', (_e, url) => {
   if (/^https?:\/\//i.test(url)) return shell.openExternal(url);
@@ -201,10 +213,35 @@ function buildMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
+async function runSelfTest() {
+  const done = (ok, detail) => {
+    process.stdout.write(`TRACKER_SELFTEST ${ok ? 'OK' : 'FAIL'} ${JSON.stringify(detail)}
+`);
+    flushDatabase();
+    app.exit(ok ? 0 : 1);
+  };
+  setTimeout(() => done(false, { error: 'timeout' }), 60000).unref?.();
+  try {
+    const win = new BrowserWindow({ show: false, webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, sandbox: true } });
+    await win.loadFile(path.join(__dirname, '..', 'ui', 'index.html'));
+    const result = await win.webContents.executeJavaScript(`(async () => {
+      await Schema.init();
+      await sql("INSERT INTO tracker_settings (key, value) VALUES ('selftest', '1') ON CONFLICT(key) DO UPDATE SET value='1'");
+      const r = await sql("SELECT value FROM tracker_settings WHERE key='selftest'");
+      return { ui: typeof App === 'object', write: r.rows[0][0] === '1', version: ${JSON.stringify(require('../package.json').version)} };
+    })()`, true);
+    storage.flush();
+    const info = storage.info();
+    done(result.ui && result.write && info.size > 0, { ...result, dbBytes: info.size, platform: process.platform, arch: process.arch });
+  } catch (err) {
+    done(false, { error: String(err?.message || err) });
+  }
+}
+
 // ─────────────────────────────────────────────────────────────
 // LIFECYCLE
 // ─────────────────────────────────────────────────────────────
-if (!app.requestSingleInstanceLock()) {
+if (!SELFTEST && !app.requestSingleInstanceLock()) {
   app.quit();
 } else {
   app.on('second-instance', () => {
@@ -219,13 +256,18 @@ if (!app.requestSingleInstanceLock()) {
     if (isMac && !app.isPackaged) app.dock?.setIcon(path.join(ASSETS, 'icon-mac.png'));
     app.setAboutPanelOptions({
       applicationName: 'Tracker',
-      applicationVersion: app.getVersion(),
+      applicationVersion: require('../package.json').version,
       copyright: 'Your data stays on this computer.',
       iconPath: path.join(ASSETS, isMac ? 'icon-mac.png' : 'icon.png')
     });
     await openDatabase();
+    updates = new Updates({
+      beforeInstall: () => { storage.flush(); storage.backup('before-update'); }
+    });
+    if (SELFTEST) return runSelfTest();
     buildMenu();
     createWindow();
+    updates.start();
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });

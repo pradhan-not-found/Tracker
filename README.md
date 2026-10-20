@@ -33,6 +33,7 @@ Build to-do lists, marks registers, attendance sheets, inventories or anything y
 - [Screenshots](#screenshots)
 - [Download and install](#download-and-install)
 - [Your data is safe](#your-data-is-safe)
+- [Updates](#updates)
 - [Accounts and signing in](#accounts-and-signing-in)
 - [Keyboard shortcuts](#keyboard-shortcuts)
 - [Build from source](#build-from-source)
@@ -122,6 +123,14 @@ Tracker treats your data as the most important thing it holds.
 - **Self-healing.** Every time Tracker opens it checks the database. If the file is damaged or missing, Tracker sets the damaged copy aside, restores the newest good backup and tells you.
 - **In your control.** **Profile menu → Data & backups** shows where your data lives and every backup. From there you can back up now, restore any backup, save a backup file anywhere (for example a USB drive) or restore from one. Before any restore your current data is backed up first, so a restore can always be undone.
 
+## Updates
+
+Tracker checks for new versions shortly after it starts and a few times a day. When one is out, a small card in the sidebar tells you, and then it **waits for you**. Nothing is downloaded or installed until you choose.
+
+- **Windows installer:** click **Download** and keep working. When it's ready, click **Restart to update**. Your data is saved and backed up before the update installs.
+- **macOS and the portable .exe:** click **Download update** to get the new file, then open it. On a Mac, drag the new Tracker into Applications to replace the old one.
+- Updates never touch your data. You can also check any time from **Profile menu → Check for updates**.
+
 ## Accounts and signing in
 
 - Create a local account with your name, email and password. Passwords are stored as salted SHA-256 hashes, never in plain text.
@@ -172,8 +181,8 @@ TRACKER_USER_DATA=/path/to/test-folder npm start
 2. Commit, then push a matching tag:
 
    ```bash
-   git tag v2.2.0
-   git push origin v2.2.0
+   git tag v2.3.0
+   git push origin v2.3.0
    ```
 
 The workflow checks that the tag matches the app version, builds every platform and publishes a GitHub Release with the installers and `SHA256SUMS.txt`. File names carry no version, so `releases/latest/download/...` links always point at the newest build.

@@ -1,7 +1,7 @@
 {
   "name": "tracker",
   "productName": "Tracker",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Tracker — a local-first attendance and records workspace",
   "main": "electron/main.js",
   "author": "pradhan-not-found",
@@ -16,6 +16,7 @@
     "build:dir": "electron-builder --dir"
   },
   "dependencies": {
+    "electron-updater": "6.8.10",
     "sql.js": "1.14.2"
   },
   "devDependencies": {
@@ -34,6 +35,7 @@
       "electron/**/*",
       "ui/**/*",
       "assets/icon.png",
+      "node_modules/electron-updater/**/*",
       "assets/icon.ico",
       "assets/icon-mac.png",
       "node_modules/sql.js/dist/sql-wasm.js",
@@ -94,7 +96,7 @@
       "artifactName": "Tracker-macos-${arch}.${ext}"
     },
     "dmg": {
-      "title": "Tracker ${version}",
+      "title": "Install Tracker",
       "iconSize": 96,
       "window": {
         "width": 540,
@@ -113,7 +115,8 @@
           "path": "/Applications"
         }
       ],
-      "icon": "assets/AppIcon.icns"
+      "icon": "assets/AppIcon.icns",
+      "background": "assets/dmg-background.png"
     },
     "linux": {
       "target": [
@@ -123,6 +126,14 @@
       "icon": "assets/icon.png",
       "category": "Office",
       "maintainer": "Tracker"
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "pradhan-not-found",
+        "repo": "Tracker",
+        "releaseType": "release"
+      }
+    ]
   }
 }

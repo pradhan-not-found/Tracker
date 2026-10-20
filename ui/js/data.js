@@ -14,7 +14,7 @@ const DataPanel = {
 
   async render() {
     const info = await DataPanel.api.info();
-    const reasonLabel = { launch: 'At launch', auto: 'Automatic', exit: 'When Tracker closed', manual: 'Manual', 'before-restore': 'Before a restore', 'before-import': 'Before an import' };
+    const reasonLabel = { launch: 'At launch', auto: 'Automatic', exit: 'When Tracker closed', 'before-update': 'Before an update', manual: 'Manual', 'before-restore': 'Before a restore', 'before-import': 'Before an import' };
     document.getElementById('dataPath').textContent = info.dbPath;
     document.getElementById('dataSize').textContent = fmtBytes(info.size);
     document.getElementById('dataLast').textContent = info.lastBackupAt ? timeAgo(new Date(info.lastBackupAt).toISOString()) : 'Never';

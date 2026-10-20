@@ -100,6 +100,7 @@ const Auth = {
     await App.init();
     if (welcome) toast(welcome, 'success');
     DataPanel.announce();
+    if (!Updater.state) Updater.init();
   },
 
   _updateSidebarUI() {
