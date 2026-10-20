@@ -1,6 +1,6 @@
 'use strict';
 /* =============================================================
-   Tracker — app shell: state, navigation, workspaces, sheets,
+   Tracker: app shell: state, navigation, workspaces, sheets,
    home & workspace overviews, record operations
 ============================================================= */
 const S = {
@@ -524,13 +524,13 @@ const Home = {
           <div class="home-hero">
             <p class="eyebrow shimmer-text" data-reveal>${greet}, ${escH(_currentUser.firstName)}</p>
             <h1 class="home-title" data-reveal>Build your first tracker</h1>
-            <p class="home-sub" data-reveal>Tracker is a private database on your computer. Create a workspace, then add sheets for tasks, marks, attendance, inventory — or anything you can describe in columns.</p>
+            <p class="home-sub" data-reveal>Tracker is a private database on your computer. Create a workspace, then add sheets for tasks, marks, attendance, inventory, or anything you can describe in columns.</p>
             <div class="home-actions" data-reveal>
               <button class="rich-btn rich-btn-lg" onclick="App.newWorkspace()">${icon('plus', 15, 2)}<span>Create a workspace</span></button>
             </div>
           </div>
           <div class="steps" data-reveal>
-            ${[['folder', 'Create a workspace', 'A home for related sheets — a class, a team, a project.'],
+            ${[['folder', 'Create a workspace', 'A home for related sheets, such as a class, a team or a project.'],
                ['grid', 'Pick a template', 'To-do, marks, attendance, inventory, or start blank. Preview before you create.'],
                ['chart', 'Track everything', 'Table, calendar and dashboard views. Every change is logged; reminders keep you on time.']]
               .map(([ic, t, d], i) => `<div class="step"><span class="step-n">${i + 1}</span><span class="step-ic">${icon(ic, 18)}</span><h3>${t}</h3><p>${d}</p></div>`).join('')}
@@ -659,7 +659,7 @@ const ActivityView = {
           <div>
             <p class="eyebrow">History</p>
             <h1 class="home-title">Activity</h1>
-            <p class="home-sub">Every record you add, edit or delete — and every import and export — is tracked here.</p>
+            <p class="home-sub">Every record you add, edit or delete is tracked here, along with every import and export.</p>
           </div>
           <select class="field-sel" onchange="ActivityView.filter=this.value;ActivityView.render()">
             <option value="">All sheets</option>
@@ -713,7 +713,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await Schema.init();
     await Auth.init();
   } catch (err) {
-    document.querySelector('#screen-boot .shimmer-text').textContent = 'Could not open the database — ' + err.message;
+    document.querySelector('#screen-boot .shimmer-text').textContent = 'Could not open the database: ' + err.message;
   } finally {
     setTimeout(() => { showScreen = _show; }, 520);
   }

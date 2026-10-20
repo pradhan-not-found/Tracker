@@ -1,6 +1,6 @@
 'use strict';
 /* =============================================================
-   Tracker — activity log (every change is tracked) + reminders
+   Tracker: activity log (every change is tracked) + reminders
 ============================================================= */
 // icon + tone (a pill tint) per action, so the timeline reads at a glance
 const ACTION_META = {
@@ -86,7 +86,7 @@ const Activity = {
 };
 
 // ─────────────────────────────────────────────────────────────
-// INBOX  — reminders for due / overdue items + recent activity
+// INBOX : reminders for due / overdue items + recent activity
 // ─────────────────────────────────────────────────────────────
 const Inbox = {
   items: [],      // [{ ws, sheet, rowId, label, date, overdue }]

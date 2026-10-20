@@ -1,6 +1,6 @@
 'use strict';
 /* =============================================================
-   Tracker — table view (spreadsheet grid), cell editors,
+   Tracker: table view (spreadsheet grid), cell editors,
    column editor, record drawer
 ============================================================= */
 
@@ -20,7 +20,7 @@ const Cell = {
       case 'select': {
         const choices = col.options?.choices || [];
         const ch = choiceOf(col, v);
-        const opts = ['<option value="">—</option>', ...choices.map(c => `<option value="${escA(c.label)}"${c.label === v ? ' selected' : ''}>${escH(c.label)}</option>`)];
+        const opts = ['<option value="">Not set</option>', ...choices.map(c => `<option value="${escA(c.label)}"${c.label === v ? ' selected' : ''}>${escH(c.label)}</option>`)];
         if (v && !ch) opts.push(`<option value="${escA(v)}" selected>${escH(v)}</option>`);
         return `<span class="pill-sel pill-${ch?.color || 'none'}${v ? '' : ' empty'}"><select ${base} onchange="Cell.change(this)" aria-label="${escA(col.name)}">${opts.join('')}</select></span>`;
       }

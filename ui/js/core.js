@@ -1,6 +1,6 @@
 'use strict';
 /* =============================================================
-   Tracker — core: native bridge, SQL helpers, motion, toasts,
+   Tracker: core: native bridge, SQL helpers, motion, toasts,
    modals, popovers, confirm dialog, formatting
 ============================================================= */
 
@@ -86,7 +86,7 @@ function timeAgo(iso) {
   return fmtDate(iso);
 }
 function fmtNum(n, digits = 1) {
-  if (n === null || n === undefined || isNaN(n)) return '—';
+  if (n === null || n === undefined || isNaN(n)) return 'n/a';
   return Number(n).toLocaleString(undefined, { maximumFractionDigits: digits });
 }
 function plural(n, word) { return `${n.toLocaleString()} ${word}${n === 1 ? '' : 's'}`; }

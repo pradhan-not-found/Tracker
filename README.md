@@ -1,6 +1,6 @@
 # Tracker
 
-A local-first desktop app for building your own databases — to-do lists, marks and grades, attendance, inventory, or anything you can describe in columns. Runs on **Windows** and **macOS**. Everything is stored in a SQLite database on your computer; there is no cloud account and no sample data.
+A local-first desktop app for building your own databases: to-do lists, marks and grades, attendance, inventory, or anything you can describe in columns. Runs on **Windows** and **macOS**. Everything is stored in a SQLite database on your computer; there is no cloud account and no sample data.
 
 ## Features
 
@@ -10,7 +10,7 @@ A local-first desktop app for building your own databases — to-do lists, marks
   - *Table*: a spreadsheet grid with inline editing, sorting, search and a summary row (sums, averages, % checked).
   - *Calendar*: a month view of any date column. Click a day to add a record on that date.
   - *Dashboard*: KPIs, completion rate, due/overdue counts, a 30-day "records added" trend, a breakdown for each status column and a marks distribution.
-- **Everything tracked.** Every record you add, edit or delete — and every column change, import and export — goes into an activity log. Each record's drawer shows its own history.
+- **Everything tracked.** Every record you add, edit or delete goes into an activity log, along with every column change, import and export. Each record's drawer shows its own history.
 - **Reminders.** Sheets with a deadline date (any date column in a To-do sheet, or one named like *Due*, *Deadline*) plus a checkbox or "done" status raise reminders. Overdue and due-today items appear in the bell inbox and on Home, and you get a system notification at sign-in.
 - **Import & export.** Import CSV, XLSX, XLS or ODS; missing columns are created with their types detected. Export a sheet as Excel, CSV or JSON, or a whole workspace as a multi-tab Excel workbook.
 - **Local accounts.** Each account sees its own workspaces. Passwords are stored as salted SHA-256 hashes.

@@ -1,6 +1,6 @@
 'use strict';
 /* =============================================================
-   Tracker — new-sheet wizard (templates + live preview),
+   Tracker: new-sheet wizard (templates + live preview),
    import (CSV / Excel) and export (CSV / Excel / JSON)
 ============================================================= */
 
@@ -78,7 +78,7 @@ const SheetWizard = {
       if (sampleRows) return escH(String(sampleRows[i]?.[c.src ?? c.name] ?? ''));
       if (c.kind === 'checkbox') return '<span class="cb sm"></span>';
       if (c.kind === 'select') { const ch = c.options?.choices?.[0]; return ch ? `<span class="pill pill-${ch.color}">${escH(ch.label)}</span>` : ''; }
-      if (c.kind === 'marks') return `<span class="pv-ph">— / ${c.options?.max || 100}</span>`;
+      if (c.kind === 'marks') return `<span class="pv-ph">0 / ${c.options?.max || 100}</span>`;
       if (c.kind === 'file') return `<span class="pv-ph">${icon('paperclip', 11)} Upload</span>`;
       if (c.kind === 'date') return '<span class="pv-ph">dd/mm/yyyy</span>';
       return '<span class="pv-line"></span>';

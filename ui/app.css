@@ -1,5 +1,5 @@
 /* =============================================================
-   Tracker — UI  |  Atlas design language, Switzer variable font
+   Tracker: UI  |  Atlas design language, Switzer variable font
 ============================================================= */
 @font-face {
   font-family: 'Switzer';
@@ -508,7 +508,7 @@ button { font-family: inherit; color: inherit; }
 .btn-soft:hover { filter: brightness(1.03); }
 .btn-soft svg { color: var(--muted); }
 
-/* Rich button — Atlas primary: soft gradient, inset highlight, embossed label */
+/* Rich button: Atlas primary: soft gradient, inset highlight, embossed label */
 .rich-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   height: 34px; padding: 0 15px;

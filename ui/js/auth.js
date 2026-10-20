@@ -1,6 +1,6 @@
 'use strict';
 /* =============================================================
-   Tracker — local accounts (SQLite), profile, avatar
+   Tracker: local accounts (SQLite), profile, avatar
 ============================================================= */
 let _currentUser = null;
 let _pendingAvatarDataUrl = null;

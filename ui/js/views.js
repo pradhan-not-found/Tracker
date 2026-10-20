@@ -1,6 +1,6 @@
 'use strict';
 /* =============================================================
-   Tracker — calendar view + dashboard view
+   Tracker: calendar view + dashboard view
 ============================================================= */
 
 // ─────────────────────────────────────────────────────────────
@@ -16,7 +16,7 @@ const Calendar = {
     if (!dcs.length) {
       el.innerHTML = `<div class="empty-state"><div class="empty-icon">${icon('calendar', 24, 1.4)}</div>
         <h2 class="empty-title">Add a date column</h2>
-        <p class="empty-desc">The calendar lays out records by date — due dates, exams, attendance days. Add a Date column to this sheet to use it.</p>
+        <p class="empty-desc">The calendar lays out records by date, such as due dates, exams and attendance days. Add a Date column to this sheet to use it.</p>
         <button class="rich-btn" onclick="ColumnEditor.open();ColumnEditor.pick('date')">${icon('plus', 14, 2)}<span>Add date column</span></button></div>`;
       if (animate) Motion.stagger(el.querySelectorAll('.empty-state > *'), { stagger: .08 });
       return;
@@ -124,14 +124,14 @@ const Dashboard = {
 
     const kpis = [Dashboard.kpi('Total records', rows.length, `<span class="kpi-sub">+${added7} this week</span>`)];
     const doneLabel = cc?.kind === 'select' ? ((cc.options?.choices || []).find(ch => ch.done || DONE_WORDS.test(ch.label))?.label || 'Done') + ' rate' : 'Completed';
-    if (cc) kpis.push(Dashboard.kpi(doneLabel, rows.length ? Math.round(doneN / rows.length * 100) + '%' : '—',
+    if (cc) kpis.push(Dashboard.kpi(doneLabel, rows.length ? Math.round(doneN / rows.length * 100) + '%' : 'n/a',
       `<span class="progress progress-sm"><i style="width:${rows.length ? doneN / rows.length * 100 : 0}%"></i></span><span class="kpi-sub">${doneN} of ${rows.length}</span>`));
     if (cc && dc) kpis.push(Dashboard.kpi('Due today', dueToday, overdue ? `<span class="kpi-flag">${icon('alert', 12, 2)} ${overdue} overdue</span>` : '<span class="kpi-ok">' + icon('check', 12, 2.4) + ' Nothing overdue</span>'));
     const numCols = vis.filter(c => c.kind === 'number' || c.kind === 'marks');
     numCols.slice(0, cc && dc ? 1 : 2).forEach(c => {
       const nums = rows.map(r => r[c.name]).filter(v => v !== null && v !== '' && !isNaN(v)).map(Number);
       const avg = nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : null;
-      kpis.push(Dashboard.kpi(`Average ${c.name.replace(/_/g, ' ')}`, avg === null ? '—' : fmtNum(avg),
+      kpis.push(Dashboard.kpi(`Average ${c.name.replace(/_/g, ' ')}`, avg === null ? 'n/a' : fmtNum(avg),
         nums.length ? `<span class="kpi-sub">${c.kind === 'marks' ? `out of ${c.options?.max || 100} · ` : ''}min ${fmtNum(Math.min(...nums))} · max ${fmtNum(Math.max(...nums))}</span>` : '<span class="kpi-sub">No values yet</span>'));
     });
 
@@ -169,7 +169,7 @@ const Dashboard = {
     }
   },
 
-  // Records added per day over the last 30 days — single series, blue.
+  // Records added per day over the last 30 days, single series, blue.
   trendCard(rows, width = 560) {
     const days = 30, counts = new Array(days).fill(0), labels = [];
     const start = new Date(); start.setHours(0, 0, 0, 0); start.setDate(start.getDate() - (days - 1));
@@ -200,7 +200,7 @@ const Dashboard = {
     </section>`;
   },
 
-  // Count per option of a status column — horizontal bars, labelled, single hue
+  // Count per option of a status column, horizontal bars, labelled, single hue
   breakdownCard(col, rows) {
     const choices = col.options?.choices || [];
     const counts = {};
@@ -234,7 +234,7 @@ const Dashboard = {
       <div class="card-hd"><h2>${escH(col.name.replace(/_/g, ' '))} distribution</h2><span class="grid-meta">${nums.length ? `Average ${fmtNum(avg)} / ${max}` : 'No marks yet'}</span></div>
       <div class="hist">${bins.map((n, i) => {
         const lo = Math.round(i * max / 10), hi = Math.round((i + 1) * max / 10);
-        return `<div class="hist-col" data-tip="<b>${n}</b> scored ${lo}–${hi}"><span class="hist-n">${n || ''}</span><span class="hist-bar" style="height:${n / peak * 100}%"></span><span class="hist-x">${lo}</span></div>`;
+        return `<div class="hist-col" data-tip="<b>${n}</b> scored ${lo} to ${hi}"><span class="hist-n">${n || ''}</span><span class="hist-bar" style="height:${n / peak * 100}%"></span><span class="hist-x">${lo}</span></div>`;
       }).join('')}</div>
     </section>`;
   },

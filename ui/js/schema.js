@@ -1,6 +1,6 @@
 'use strict';
 /* =============================================================
-   Tracker — schema: metadata tables, column kinds, templates
+   Tracker: schema: metadata tables, column kinds, templates
 ============================================================= */
 
 // Column kinds. `sql` is the storage affinity; everything else is UI.
@@ -8,7 +8,7 @@ const KINDS = {
   text:     { label: 'Text',      icon: 'text',      sql: 'TEXT',    desc: 'Names, notes, anything' },
   number:   { label: 'Number',    icon: 'hash',      sql: 'REAL',    desc: 'Quantities, prices, scores' },
   marks:    { label: 'Marks',     icon: 'award',     sql: 'REAL',    desc: 'Score out of a maximum' },
-  date:     { label: 'Date',      icon: 'calendar',  sql: 'TEXT',    desc: 'Due dates, events — powers the calendar' },
+  date:     { label: 'Date',      icon: 'calendar',  sql: 'TEXT',    desc: 'Due dates and events for the calendar' },
   checkbox: { label: 'Checkbox',  icon: 'checkbox',  sql: 'INTEGER', desc: 'Done / not done' },
   select:   { label: 'Status',    icon: 'tag',       sql: 'TEXT',    desc: 'Pick one from a list' },
   file:     { label: 'File',      icon: 'paperclip', sql: 'TEXT',    desc: 'Upload a document or image' },
@@ -68,7 +68,7 @@ const TEMPLATES = [
   },
   {
     id: 'inventory', name: 'Inventory', icon: 'box',
-    desc: 'Items, quantities, prices and photos — know what you have.',
+    desc: 'Items, quantities, prices and photos, so you know what you have.',
     columns: [
       { name: 'Item', kind: 'text' },
       { name: 'SKU', kind: 'text' },
@@ -145,7 +145,7 @@ const Schema = {
 
   prefix(wsName) { return 'ws_' + slug(wsName); },
 
-  // All sheets for a workspace — registered ones plus legacy tables found by prefix.
+  // All sheets for a workspace, registered ones plus legacy tables found by prefix.
   async sheetsFor(ws) {
     const reg = await sqlObjects(`SELECT table_name, display_name, template, created_at FROM tracker_sheets WHERE workspace_id=${ws.id}`);
     const known = new Set(reg.map(r => r.table_name));
