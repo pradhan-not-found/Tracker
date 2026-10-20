@@ -1,16 +1,21 @@
 import { downloads, REPO_URL, RELEASES_URL } from '@/lib/downloads'
+import Link from 'next/link'
+import type { Build } from '@/lib/downloads'
 import { LogoSolid } from './LogoSolid'
+import { DownloadLink } from './download/DownloadProvider'
 
 const year = new Date().getFullYear()
 
-const columns = [
+type FooterLink = { label: string; href: string; external?: boolean; build?: Build; page?: boolean }
+
+const columns: { title: string; links: FooterLink[] }[] = [
   {
     title: 'Download',
     links: [
-      { label: 'Download for Windows', href: downloads.windows.installer.url },
-      { label: 'Download for macOS', href: downloads.mac.arm64.url },
-      { label: 'Intel Mac build', href: downloads.mac.x64.url },
-      { label: 'Portable .exe', href: downloads.windows.portable.url },
+      { label: 'Download for Windows', href: downloads.windows.installer.url, build: downloads.windows.installer },
+      { label: 'Download for macOS', href: downloads.mac.arm64.url, build: downloads.mac.arm64 },
+      { label: 'Intel Mac build', href: downloads.mac.x64.url, build: downloads.mac.x64 },
+      { label: 'Portable .exe', href: downloads.windows.portable.url, build: downloads.windows.portable },
     ],
   },
   {
@@ -23,15 +28,16 @@ const columns = [
   {
     title: 'Guide',
     links: [
-      { label: 'Features', href: '#features' },
-      { label: 'Templates', href: '#templates' },
-      { label: 'FAQ', href: '#faq' },
+      { label: 'Features', href: '#features', page: true },
+      { label: 'Templates', href: '#templates', page: true },
+      { label: 'FAQ', href: '#faq', page: true },
       { label: 'Back to top', href: '#top' },
     ],
   },
 ]
 
-export function Footer() {
+/** `home` is false on sub-pages, where in-page section links point back to the home page. */
+export function Footer({ home = true }: { home?: boolean }) {
   return (
     <footer className="footer">
       <div className="footer-panel glass">
@@ -49,12 +55,15 @@ export function Footer() {
               <ul>
                 {c.links.map((l) => (
                   <li key={l.label}>
-                    <a
-                      href={l.href}
-                      {...('external' in l && l.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                    >
-                      {l.label}
-                    </a>
+                    {l.build ? (
+                      <DownloadLink build={l.build}>{l.label}</DownloadLink>
+                    ) : l.page && !home ? (
+                      <Link href={`/${l.href}`}>{l.label}</Link>
+                    ) : (
+                      <a href={l.href} {...(l.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+                        {l.label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>

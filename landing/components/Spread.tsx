@@ -1,7 +1,10 @@
 import type { ReactNode } from 'react'
+import { VERSION } from '@/lib/downloads'
+
+const SERIES = `Tracker ${VERSION.split('.').slice(0, 2).join('.')}`
 
 /** Tiny uppercase running header: section name · publication line. */
-export function Meta({ label, right = 'Tracker 2.1' }: { label: string; right?: string }) {
+export function Meta({ label, right = SERIES }: { label: string; right?: string }) {
   return (
     <div className="meta">
       <span className="meta-label" aria-hidden>

@@ -3,6 +3,7 @@
 import { downloads, VERSION } from '@/lib/downloads'
 import { usePlatform } from '@/lib/use-platform'
 import { AppleIcon, WindowsIcon } from './icons'
+import { DownloadLink } from './download/DownloadProvider'
 
 /** Hero CTAs. The button matching the visitor's OS is solid; the other becomes a hairline outline. */
 export function PlatformButtons() {
@@ -15,21 +16,21 @@ export function PlatformButtons() {
   return (
     <div className="ctas" data-os={os ?? 'unknown'}>
       <div className="cta-row">
-        <a href={downloads.windows.installer.url} className={`btn ${winSolid ? 'btn-solid' : 'btn-line'}`}>
+        <DownloadLink build={downloads.windows.installer} className={`btn ${winSolid ? 'btn-solid' : 'btn-line'}`}>
           <WindowsIcon />
           Download for Windows
-        </a>
-        <a href={macLink.url} className={`btn ${macSolid ? 'btn-solid' : 'btn-line'}`}>
+        </DownloadLink>
+        <DownloadLink build={macLink} className={`btn ${macSolid ? 'btn-solid' : 'btn-line'}`}>
           <AppleIcon />
           Download for macOS
-        </a>
+        </DownloadLink>
       </div>
       <p className="cta-meta">
         Free <span aria-hidden>·</span> Works offline <span aria-hidden>·</span> v{VERSION}
         {os === 'mac' && (
           <>
             {' '}
-            <span aria-hidden>·</span> <a href={macOther.url}>{macOther.label} build</a>
+            <span aria-hidden>·</span> <DownloadLink build={macOther}>{macOther.label} build</DownloadLink>
           </>
         )}
       </p>

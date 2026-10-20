@@ -4,6 +4,7 @@ import { downloads, LATEST_RELEASE_URL, VERSION } from '@/lib/downloads'
 import { usePlatform } from '@/lib/use-platform'
 import { Spread } from './Spread'
 import { AppleIcon, ArrowRight, DownloadIcon, WindowsIcon } from './icons'
+import { DownloadLink } from './download/DownloadProvider'
 
 export function DownloadSection() {
   const { os, macArch } = usePlatform()
@@ -29,15 +30,15 @@ export function DownloadSection() {
                 </h3>
                 {os === 'windows' && <span className="detected">Your system</span>}
               </div>
-              <p className="platform-meta">Windows 10/11 · 64-bit · .exe installer</p>
+              <p className="platform-meta">Windows 10/11 · 64-bit · .exe installer · {downloads.windows.installer.size}</p>
               <div className="platform-actions">
-                <a className="btn btn-solid" href={downloads.windows.installer.url}>
+                <DownloadLink className="btn btn-solid" build={downloads.windows.installer}>
                   <DownloadIcon />
                   Download installer
-                </a>
-                <a className="text-link" href={downloads.windows.portable.url}>
+                </DownloadLink>
+                <DownloadLink className="text-link" build={downloads.windows.portable}>
                   Portable .exe <ArrowRight />
-                </a>
+                </DownloadLink>
               </div>
               <p className="platform-file">{downloads.windows.installer.file}</p>
             </li>
@@ -49,15 +50,15 @@ export function DownloadSection() {
                 </h3>
                 {os === 'mac' && <span className="detected">Your system</span>}
               </div>
-              <p className="platform-meta">macOS 12+ · Apple Silicon &amp; Intel · .dmg</p>
+              <p className="platform-meta">macOS 12+ · Apple Silicon &amp; Intel · .dmg · {macPrimary.size}</p>
               <div className="platform-actions">
-                <a className="btn btn-solid" href={macPrimary.url}>
+                <DownloadLink className="btn btn-solid" build={macPrimary}>
                   <DownloadIcon />
                   Download for {macPrimary.label}
-                </a>
-                <a className="text-link" href={macSecondary.url}>
+                </DownloadLink>
+                <DownloadLink className="text-link" build={macSecondary}>
                   {macSecondary.label} <ArrowRight />
-                </a>
+                </DownloadLink>
               </div>
               <p className="platform-note">
                 First launch: the macOS builds are unsigned, so right-click Tracker in Applications and choose{' '}

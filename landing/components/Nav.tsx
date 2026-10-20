@@ -1,11 +1,20 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { LogoSolid } from './LogoSolid'
 import { DownloadIcon } from './icons'
 
 /** Glass nav bar that slides away while scrolling down and returns on any upward scroll. */
-export function Nav() {
+const sections = [
+  { href: '#features', label: 'Features' },
+  { href: '#views', label: 'Views' },
+  { href: '#templates', label: 'Templates' },
+  { href: '#faq', label: 'FAQ' },
+]
+
+/** `home` is false on sub-pages: section links and the brand then lead back to the home page. */
+export function Nav({ home = true }: { home?: boolean }) {
   const [hidden, setHidden] = useState(false)
 
   useEffect(() => {
@@ -37,20 +46,35 @@ export function Nav() {
   return (
     <header className="nav" data-hidden={hidden ? 'true' : 'false'}>
       <div className="nav-inner">
-        <a href="#top" className="brand brand-nav" aria-label="Tracker, back to top">
-          <LogoSolid size={31} />
-          <span>Tracker</span>
-        </a>
+        {home ? (
+          <a href="#top" className="brand brand-nav" aria-label="Tracker, back to top">
+            <LogoSolid size={31} />
+            <span>Tracker</span>
+          </a>
+        ) : (
+          <Link href="/" className="brand brand-nav" aria-label="Tracker home">
+            <LogoSolid size={31} />
+            <span>Tracker</span>
+          </Link>
+        )}
         <nav aria-label="Primary" className="nav-links">
-          <a href="#features">Features</a>
-          <a href="#views">Views</a>
-          <a href="#templates">Templates</a>
-          <a href="#faq">FAQ</a>
+          {sections.map((l) =>
+            home ? (
+              <a key={l.href} href={l.href}>
+                {l.label}
+              </a>
+            ) : (
+              <Link key={l.href} href={`/${l.href}`}>
+                {l.label}
+              </Link>
+            ),
+          )}
         </nav>
-        <a href="#download" className="btn btn-solid btn-sm">
+        {/* The download page detects the system and starts the right build by itself. */}
+        <Link href="/download/" className="btn btn-solid btn-sm">
           <DownloadIcon width={14} height={14} />
           Download
-        </a>
+        </Link>
       </div>
     </header>
   )

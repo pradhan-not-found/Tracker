@@ -14,7 +14,7 @@ export type DetectedPlatform = {
   macArch: 'arm' | 'x86' | null
 }
 
-function detectOS(): Platform {
+export function detectOS(): Platform {
   const nav = navigator as Navigator & { userAgentData?: UAData }
   const hint = nav.userAgentData?.platform?.toLowerCase() ?? ''
   const ua = navigator.userAgent.toLowerCase()
@@ -50,4 +50,16 @@ export function usePlatform(): DetectedPlatform {
   }, [])
 
   return state
+}
+
+/** Resolves the Mac CPU architecture when the browser exposes it (Chromium UA Client Hints); null otherwise. */
+export async function detectMacArch(): Promise<'arm' | 'x86' | null> {
+  const uaData = (navigator as Navigator & { userAgentData?: UAData }).userAgentData
+  if (!uaData?.getHighEntropyValues) return null
+  try {
+    const v = await uaData.getHighEntropyValues(['architecture'])
+    return v.architecture === 'arm' || v.architecture === 'x86' ? v.architecture : null
+  } catch {
+    return null
+  }
 }

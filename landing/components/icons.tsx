@@ -243,3 +243,9 @@ export const DashboardIcon = (props: P) => (
     <path d="M4 20h16.5M7 20v-4.5M12 20v-7M17 20v-5" />
   </svg>
 )
+
+export const CloseIcon = (props: P) => (
+  <svg {...stroke(props)}>
+    <path d="M6 6l12 12M18 6 6 18" />
+  </svg>
+)

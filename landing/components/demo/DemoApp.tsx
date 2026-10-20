@@ -1,5 +1,6 @@
 'use client'
 
+import { asset } from '@/lib/paths'
 import { useRef, type KeyboardEvent } from 'react'
 import { ActivityIcon, CalendarIcon, ChartIcon, FolderIcon, HomeIcon, MenuIcon, PlusIcon, SearchIcon, TableIcon } from '../icons'
 import { useDemo, useStats, type View } from './store'
@@ -56,7 +57,7 @@ export function DemoApp() {
             </span>
           </div>
           <div className="win-brand">
-            <img src="logo-color.png" alt="" width={20} height={20} />
+            <img src={asset('logo-color.png')} alt="" width={20} height={20} />
             <span>Tracker</span>
           </div>
           <ul className="side-actions" aria-hidden>

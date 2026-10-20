@@ -10,10 +10,11 @@ import { Footer } from '@/components/Footer'
 import { PageArcs } from '@/components/Arcs'
 import { DemoProvider } from '@/components/demo/store'
 import { JsonLd } from '@/components/JsonLd'
+import { DownloadProvider } from '@/components/download/DownloadProvider'
 
 export default function Home() {
   return (
-    <>
+    <DownloadProvider>
       <JsonLd />
       <Nav />
       <div className="page">
@@ -31,6 +32,6 @@ export default function Home() {
         </main>
         <Footer />
       </div>
-    </>
+    </DownloadProvider>
   )
 }
