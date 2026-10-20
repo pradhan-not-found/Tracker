@@ -1,0 +1,64 @@
+/**
+ * Page-wide hairline ornament: evenly spaced parallel curves that flow continuously
+ * from the top of the page to the bottom, like nested ripples. Each line is one smooth
+ * path (a tangent-continuous wave), so nothing ends abruptly at a section boundary.
+ *
+ * Rendered once behind all sections, stretched to the page height; strokes use
+ * non-scaling-stroke so they stay hairline at any size. Two variants so phones get a
+ * shorter period (the page is much taller relative to its width there).
+ */
+
+const WIDTH = 1000
+const UNIT = 1000 // one full wave period in viewBox units
+
+function wavePath(base: number, depth: number, periods: number) {
+  // Sample x(y) = base + depth/2 * (1 - cos(2πy/UNIT)) - depth/2 and join with Catmull-Rom → cubic Béziers.
+  const steps = periods * 16
+  const total = periods * UNIT
+  const pts: [number, number][] = []
+  for (let i = -1; i <= steps + 1; i++) {
+    const y = (i / steps) * total
+    const x = base + (depth / 2) * -Math.cos((2 * Math.PI * y) / UNIT)
+    pts.push([x, y])
+  }
+  const f = (n: number) => Math.round(n * 10) / 10
+  let d = `M ${f(pts[1][0])} ${f(pts[1][1] - 20)} L ${f(pts[1][0])} ${f(pts[1][1])}`
+  for (let i = 1; i < pts.length - 2; i++) {
+    const [p0, p1, p2, p3] = [pts[i - 1], pts[i], pts[i + 1], pts[i + 2]]
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6]
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6]
+    d += ` C ${f(c1[0])} ${f(c1[1])} ${f(c2[0])} ${f(c2[1])} ${f(p2[0])} ${f(p2[1])}`
+  }
+  const last = pts[pts.length - 2]
+  d += ` L ${f(last[0])} ${f(last[1] + 20)}`
+  return d
+}
+
+function ArcsSvg({ periods, className }: { periods: number; className: string }) {
+  const depth = 210
+  const step = 213
+  const lines = Array.from({ length: 7 }, (_, k) => -110 + k * step)
+  return (
+    <svg
+      className={`arcs ${className}`}
+      viewBox={`0 0 ${WIDTH} ${periods * UNIT}`}
+      preserveAspectRatio="none"
+      aria-hidden
+      focusable={false}
+      data-reveal=""
+    >
+      {lines.map((b, k) => (
+        <path key={k} d={wavePath(b, depth, periods)} pathLength={1} vectorEffect="non-scaling-stroke" style={{ ['--k' as string]: k }} />
+      ))}
+    </svg>
+  )
+}
+
+export function PageArcs() {
+  return (
+    <div className="page-arcs" aria-hidden>
+      <ArcsSvg periods={8} className="arcs-wide" />
+      <ArcsSvg periods={12} className="arcs-narrow" />
+    </div>
+  )
+}
