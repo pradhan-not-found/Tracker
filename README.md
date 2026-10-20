@@ -203,7 +203,7 @@ npm run build      # static export in landing/out
 ## Project structure
 
 ```
-electron/          Desktop shell
+electron/          Desktop shell (window, storage, updates)
   main.js            window, menus, IPC
   storage.js         durable SQLite storage, integrity checks, backups
   preload.js         safe bridge exposed to the UI
@@ -223,20 +223,20 @@ docs/screenshots/  Images used in this README
 src/main.swift     Optional native macOS shell (WKWebView), built with build_dmg.sh
 ```
 
-**Built with** [Electron](https://www.electronjs.org/), [sql.js](https://sql.js.org/) (SQLite), [SheetJS](https://sheetjs.com/) for spreadsheets, [GSAP](https://gsap.com/) for motion, the [Switzer](https://www.fontshare.com/fonts/switzer) typeface, and [Next.js](https://nextjs.org/) for the landing page.
+**Built with** [sql.js](https://sql.js.org/) (SQLite), [SheetJS](https://sheetjs.com/) for spreadsheets, [GSAP](https://gsap.com/) for motion, the [Switzer](https://www.fontshare.com/fonts/switzer) typeface, and [Next.js](https://nextjs.org/) for the landing page.
 
 ## Troubleshooting
 
 <details>
-<summary><b>The taskbar shows the Electron logo instead of Tracker's</b></summary>
+<summary><b>The app starts without a window when run from VS Code's terminal</b></summary>
 
-This only happens when running from source with `npm start`, usually because a window opened before an update is still running or a taskbar pin points at `electron.exe`. Quit every Tracker or Electron window, unpin any old taskbar item and start again. Installed builds always show Tracker's icon.
+VS Code's terminal sets an environment variable that makes the desktop runtime start in command-line mode. Clear it before `npm start`: run `set ELECTRON_RUN_AS_NODE=` on Windows or `unset ELECTRON_RUN_AS_NODE` on macOS.
 </details>
 
 <details>
-<summary><b>Electron starts as plain Node or says it cannot find the module "electron"</b></summary>
+<summary><b>Notifications from a development build say "Tracker (development)"</b></summary>
 
-Some terminals (including VS Code's) set `ELECTRON_RUN_AS_NODE`. Clear it before running, for example `set ELECTRON_RUN_AS_NODE=` on Windows or `unset ELECTRON_RUN_AS_NODE` on macOS.
+When you run from source, Tracker registers a "Tracker (development)" Start menu shortcut so Windows shows its name and logo on notifications. Installed builds use the normal "Tracker" shortcut.
 </details>
 
 <details>

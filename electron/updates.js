@@ -36,8 +36,10 @@ function assetFor(platform, arch) {
 }
 
 class Updates {
-  constructor({ beforeInstall }) {
+  constructor({ beforeInstall, notify }) {
     this.beforeInstall = beforeInstall;
+    this.notify = notify || (() => {});
+    this.notified = new Set();
     this.state = { status: 'idle', current: APP_VERSION, mode: canSelfUpdate ? 'install' : 'download' };
     this.updater = null;
     this.timer = null;
@@ -59,8 +61,29 @@ class Updates {
   }
 
   _set(patch) {
+    const prev = this.state.status;
     this.state = { ...this.state, ...patch };
+    this._announce(prev);
     BrowserWindow.getAllWindows().forEach(w => w.webContents.send('tracker:update-state', this.state));
+  }
+
+  // One system notification per version and stage, so you hear about it even
+  // when Tracker is in the background. Nothing installs until you choose.
+  _announce(prev) {
+    const { status, version } = this.state;
+    if (status === prev || !version) return;
+    const key = `${status}:${version}`;
+    if (this.notified.has(key)) return;
+    if (status === 'available' && !this.state.manual) {
+      this.notified.add(key);
+      this.notify(`Tracker ${version} is available`, this.state.mode === 'install'
+        ? 'Open Tracker to download it. Nothing installs until you choose.'
+        : 'Open Tracker to download the new version. Your data stays as it is.');
+    }
+    if (status === 'ready') {
+      this.notified.add(key);
+      this.notify('Update ready to install', `Restart Tracker when you're ready to finish updating to ${version}.`);
+    }
   }
 
   _available(version, notes, url) {

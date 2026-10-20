@@ -5,7 +5,7 @@
    bridge (sql.js, stored durably in the user's app-data folder,
    with automatic backups: see storage.js).
 ============================================================= */
-const { app, BrowserWindow, ipcMain, nativeTheme, shell, Menu, dialog, powerMonitor } = require('electron');
+const { app, BrowserWindow, ipcMain, nativeTheme, shell, Menu, dialog, powerMonitor, Notification } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { Storage } = require('./storage');
@@ -13,6 +13,9 @@ const { Updates } = require('./updates');
 
 const isMac = process.platform === 'darwin';
 const isDev = process.argv.includes('--dev');
+
+// Always present as "Tracker", never the runtime's own name.
+app.setName('Tracker');
 
 // Lets tests run against a throwaway data folder.
 if (process.env.TRACKER_USER_DATA) app.setPath('userData', process.env.TRACKER_USER_DATA);
@@ -213,6 +216,43 @@ function buildMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
+// Windows names notifications after the Start menu shortcut that carries the
+// app's ID. The installer creates one; when running from source or as the
+// portable .exe there is none, so Windows would show a generic name. Create a
+// Tracker shortcut with our icon so notifications always say "Tracker".
+function ensureWindowsShortcut() {
+  if (process.platform !== 'win32' || SELFTEST) return;
+  const portable = !!process.env.PORTABLE_EXECUTABLE_DIR;
+  if (app.isPackaged && !portable) return;
+  try {
+    const dir = path.join(app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs');
+    const lnk = path.join(dir, app.isPackaged ? 'Tracker.lnk' : 'Tracker (development).lnk');
+    const target = portable ? path.join(process.env.PORTABLE_EXECUTABLE_DIR, process.env.PORTABLE_EXECUTABLE_APP_FILENAME + '.exe') : process.execPath;
+    const opts = {
+      target,
+      args: app.isPackaged ? '' : `"${path.join(__dirname, '..')}"`,
+      description: 'Tracker',
+      icon: path.join(ASSETS, 'icon.ico'),
+      iconIndex: 0,
+      appUserModelId: APP_ID
+    };
+    if (!(app.isPackaged && fs.existsSync(lnk))) shell.writeShortcutLink(lnk, fs.existsSync(lnk) ? 'update' : 'create', opts);
+  } catch (err) { console.warn('Could not register the Tracker shortcut', err); }
+}
+
+// System notification that brings Tracker to the front when clicked.
+function notify(title, body) {
+  if (!Notification.isSupported()) return;
+  const n = new Notification({ title, body, icon: path.join(ASSETS, process.platform === 'win32' ? 'icon.ico' : 'icon.png'), silent: false });
+  n.on('click', () => {
+    if (!mainWindow) return;
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
+  });
+  n.show();
+}
+
 async function runSelfTest() {
   const done = (ok, detail) => {
     process.stdout.write(`TRACKER_SELFTEST ${ok ? 'OK' : 'FAIL'} ${JSON.stringify(detail)}
@@ -261,8 +301,10 @@ if (!SELFTEST && !app.requestSingleInstanceLock()) {
       iconPath: path.join(ASSETS, isMac ? 'icon-mac.png' : 'icon.png')
     });
     await openDatabase();
+    ensureWindowsShortcut();
     updates = new Updates({
-      beforeInstall: () => { storage.flush(); storage.backup('before-update'); }
+      beforeInstall: () => { storage.flush(); storage.backup('before-update'); },
+      notify
     });
     if (SELFTEST) return runSelfTest();
     buildMenu();
