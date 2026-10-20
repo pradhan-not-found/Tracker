@@ -777,6 +777,12 @@
 .view-pane .demo-loading {
   min-height: 360px;
 }
+/* phones: size the preview to the active view instead of the tallest one (no empty white block) */
+@media (max-width: 760px) {
+  .view-pane:not(.is-active) {
+    display: none;
+  }
+}
 
 /* --------------------------------------------------------------------------
    Responsive

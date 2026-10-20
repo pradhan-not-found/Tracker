@@ -136,8 +136,8 @@ button {
 }
 
 .skip-link {
-  position: absolute;
-  left: 16px;
+  position: fixed; /* visible wherever the page is scrolled when it receives focus */
+  left: calc(16px + env(safe-area-inset-left, 0px));
   top: -60px;
   z-index: 100;
   padding: 10px 16px;
@@ -148,7 +148,7 @@ button {
   transition: top 0.2s var(--ease-out);
 }
 .skip-link:focus {
-  top: 12px;
+  top: calc(12px + env(safe-area-inset-top, 0px));
 }
 
 /* sections focused programmatically (skip link, "Other platforms") need no ring */
@@ -635,6 +635,7 @@ button {
 .row-cols {
   font-size: 15px;
 }
+
 .row-note {
   font-size: 14px;
   color: var(--ink-muted);
@@ -913,14 +914,24 @@ button {
   display: grid;
   gap: 8px;
 }
-.footer-col a {
+.footer-coffee {
+  margin-top: 14px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.footer-col a,
+.footer-coffee {
   display: inline-flex;
   align-items: center;
   gap: 9px;
   font-size: 15px;
   color: var(--ink);
 }
-.footer-col a .footer-link-icon {
+.footer-col a .footer-link-icon,
+.footer-coffee .footer-link-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -930,18 +941,21 @@ button {
   color: var(--ink-muted);
   transition: color 0.2s ease, transform 0.2s ease;
 }
-.footer-col a:hover .footer-link-icon {
+.footer-col a:hover .footer-link-icon,
+.footer-coffee:hover .footer-link-icon {
   color: var(--ink);
   transform: translateY(-1px);
 }
-.footer-col a .footer-link-label {
+.footer-col a .footer-link-label,
+.footer-coffee .footer-link-label {
   background-image: linear-gradient(currentColor, currentColor);
   background-size: 0% 1px;
   background-repeat: no-repeat;
   background-position: 0 100%;
   transition: background-size 0.4s var(--ease-out);
 }
-.footer-col a:hover .footer-link-label {
+.footer-col a:hover .footer-link-label,
+.footer-coffee:hover .footer-link-label {
   background-size: 100% 1px;
 }
 .footer-bottom {
@@ -1209,6 +1223,155 @@ button {
 /* buttons and file names line up across cards whatever the title length */
 .dl-build .btn {
   margin-top: auto;
+}
+
+
+/* Coffee dialog: minimal, one centred column, the QR is the hero */
+.coffee-dialog {
+  width: min(380px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  overflow: visible;
+}
+.coffee-dialog::backdrop {
+  background: rgba(61, 53, 54, 0.18);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.coffee-dialog[open] {
+  animation: coffee-in 0.35s var(--ease-out);
+}
+.coffee-dialog[open]::backdrop {
+  animation: dl-fade 0.3s ease;
+}
+@keyframes coffee-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+.coffee-panel {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  padding: 40px 32px 28px;
+  border-radius: 24px;
+  text-align: center;
+  background: rgba(244, 248, 255, 0.86);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 30px 70px -30px rgba(40, 50, 80, 0.45);
+}
+.coffee-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.coffee-close svg {
+  width: 16px;
+  height: 16px;
+}
+.coffee-close:hover {
+  background: rgba(61, 53, 54, 0.08);
+  color: var(--ink);
+}
+.coffee-close:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+/* credit row under a hairline: "Made by · avatar · name · @handle" */
+.coffee-credit {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px 10px;
+  width: 100%;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule-soft);
+  font-size: 13.5px;
+}
+.coffee-made {
+  color: var(--ink-muted);
+}
+.coffee-who {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.coffee-who img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9);
+}
+.coffee-name {
+  font-weight: 500;
+}
+.coffee-who:hover .coffee-name,
+.coffee-who:focus-visible .coffee-name {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.coffee-who:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+.coffee-title {
+  margin-top: 12px;
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+.coffee-qr {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  margin: 24px 0 0;
+}
+.coffee-qr img {
+  width: 200px;
+  height: 200px;
+  padding: 10px;
+  box-sizing: content-box;
+  background: #fff;
+  border: 1px solid rgba(46, 46, 45, 0.1);
+  border-radius: 16px;
+}
+.coffee-qr figcaption {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  .coffee-dialog[open],
+  .coffee-dialog[open]::backdrop {
+    animation: none;
+  }
 }
 
 /* --------------------------------------------------------------------------

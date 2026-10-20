@@ -57,7 +57,7 @@ export function DemoApp() {
             </span>
           </div>
           <div className="win-brand">
-            <img src={asset('logo-color.png')} alt="" width={20} height={20} />
+            <img src={asset('logo-color-40.png')} alt="" width={20} height={20} decoding="async" />
             <span>Tracker</span>
           </div>
           <ul className="side-actions" aria-hidden>

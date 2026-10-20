@@ -30,7 +30,16 @@ export function Templates() {
                 <t.Icon />
               </span>
               <h3 className="row-title">{t.name}</h3>
-              <p className="row-cols">{t.cols}</p>
+              <p className="row-cols">
+                {/* a non-breaking space keeps each separator on the line before it, never at the start of a line */}
+                {t.cols.split(' · ').map((c, k, all) => (
+                  <span key={c}>
+                    {c}
+                    {k < all.length - 1 ? '00a0·' : ''}
+                    {k < all.length - 1 ? ' ' : ''}
+                  </span>
+                ))}
+              </p>
               <p className="row-note">{t.note}</p>
             </li>
           ))}

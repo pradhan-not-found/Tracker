@@ -7,7 +7,7 @@ import './globals.css'
 import './demo.css'
 
 const switzer = localFont({
-  src: './fonts/Switzer-Variable.ttf',
+  src: './fonts/Switzer-Variable.woff2',
   weight: '100 900',
   style: 'normal',
   display: 'swap',

@@ -4,6 +4,7 @@ import type { Build } from '@/lib/downloads'
 import type { ComponentType, SVGProps } from 'react'
 import { LogoSolid } from './LogoSolid'
 import { DownloadLink } from './download/DownloadProvider'
+import { CoffeeLink } from './coffee/Coffee'
 import {
   WindowsIcon,
   AppleIcon,
@@ -68,6 +69,7 @@ export function Footer({ home = true }: { home?: boolean }) {
               <span>Tracker</span>
             </span>
             <p className="footer-tag">Your data, organised your way. Private, offline and on your desk.</p>
+            <CoffeeLink />
           </div>
           {columns.map((c) => (
             <nav className="footer-col" aria-label={c.title} key={c.title}>

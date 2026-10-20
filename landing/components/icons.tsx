@@ -298,3 +298,11 @@ export const TemplateIcon = (props: P) => (
     <rect width="5" height="7" x="16" y="14" rx="1.5" />
   </svg>
 )
+
+export const CoffeeIcon = (props: P) => (
+  <svg {...stroke(props)}>
+    <path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9Z" />
+    <path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16" />
+    <path d="M8 3.5c0 1 1 1.5 1 2.5M12 3.5c0 1 1 1.5 1 2.5" />
+  </svg>
+)
