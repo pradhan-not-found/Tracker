@@ -54,10 +54,15 @@ export function DownloadProvider({
   )
 }
 
-type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & { build: Build; children: ReactNode }
+type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & {
+  build: Build
+  children: ReactNode
+  /** Where focus goes when the dialog closes (default: this link). Use when the link itself disappears, e.g. in a menu. */
+  returnFocus?: () => HTMLElement | null
+}
 
 /** A real link to the release asset that, on a plain left click, downloads in place and opens the dialog. */
-export function DownloadLink({ build, children, onClick, ...rest }: LinkProps) {
+export function DownloadLink({ build, children, onClick, returnFocus, ...rest }: LinkProps) {
   const start = useContext(DownloadCtx)
   return (
     <a
@@ -67,7 +72,7 @@ export function DownloadLink({ build, children, onClick, ...rest }: LinkProps) {
         onClick?.(e)
         if (e.defaultPrevented || !start || !isPlainLeftClick(e)) return
         e.preventDefault()
-        start(build, e.currentTarget)
+        start(build, returnFocus?.() ?? e.currentTarget)
       }}
     >
       {children}

@@ -177,12 +177,12 @@ TRACKER_USER_DATA=/path/to/test-folder npm start
 
 [`build.yml`](.github/workflows/build.yml) builds Windows and macOS packages on every push to `main`. To publish a release:
 
-1. Bump `version` in `package.json` (and `VERSION` in `landing/lib/downloads.ts`).
+1. Bump `version` in `package.json` (and `VERSION` in `landing/lib/downloads.ts`), and add the release notes to `ui/js/changelog.js`. They appear in the app's "What's new" and become the GitHub release notes.
 2. Commit, then push a matching tag:
 
    ```bash
-   git tag v2.3.1
-   git push origin v2.3.1
+   git tag v2.4.0
+   git push origin v2.4.0
    ```
 
 The workflow checks that the tag matches the app version, builds every platform and publishes a GitHub Release with the installers and `SHA256SUMS.txt`. File names carry no version, so `releases/latest/download/...` links always point at the newest build.

@@ -101,6 +101,7 @@ const Auth = {
     if (welcome) toast(welcome, 'success');
     DataPanel.announce();
     if (!Updater.state) Updater.init();
+    WhatsNew.check();
   },
 
   _updateSidebarUI() {

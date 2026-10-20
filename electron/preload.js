@@ -7,6 +7,8 @@ contextBridge.exposeInMainWorld('trackerDesktop', {
   setTheme: (mode) => ipcRenderer.send('tracker:theme', mode),
   windowAction: (action) => ipcRenderer.send('tracker:window', action),
   onWindowState: (cb) => ipcRenderer.on('tracker:window-state', (_e, state) => cb(state)),
+  notify: (title, body) => ipcRenderer.send('tracker:notify', { title, body }),
+  onSaveState: (cb) => ipcRenderer.on('tracker:save-state', (_e, state) => cb(state)),
   updates: {
     get: () => ipcRenderer.invoke('tracker:update-get'),
     check: () => ipcRenderer.invoke('tracker:update-check'),

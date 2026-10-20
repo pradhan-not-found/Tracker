@@ -505,6 +505,25 @@
   </div>
 </div>
 
+<!-- What's new (after an update, or previewing one) -->
+<div id="modalWhatsNew" class="overlay" onclick="Modal.bg(event,'modalWhatsNew')">
+  <div class="modal modal-wide wn-modal" role="dialog" aria-labelledby="wnTitle">
+    <div class="modal-hd">
+      <div>
+        <p class="wn-kicker"><span id="wnKicker">Updated</span> · <span id="wnVersion"></span></p>
+        <h3 id="wnTitle" class="wn-title">What's new</h3>
+        <p class="modal-sub" id="wnSummary"></p>
+      </div>
+      <button class="icon-btn" onclick="Modal.close('modalWhatsNew')" aria-label="Close"><svg width="16" height="16"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-bd wn-body" id="wnBody"></div>
+    <div class="modal-ft modal-ft-between">
+      <button class="btn btn-ghost" id="wnNotes">View full release notes</button>
+      <button class="rich-btn modal-primary" id="wnOk" onclick="WhatsNew.ok()"><span>Got it</span></button>
+    </div>
+  </div>
+</div>
+
 <!-- Data & backups -->
 <div id="modalData" class="overlay" onclick="Modal.bg(event,'modalData')">
   <div class="modal modal-wide" role="dialog" aria-labelledby="modalDataTitle">
@@ -598,6 +617,8 @@
 <script src="js/io.js"></script>
 <script src="js/data.js"></script>
 <script src="js/updates.js"></script>
+<script src="js/changelog.js"></script>
+<script src="js/whatsnew.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

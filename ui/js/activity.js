@@ -121,8 +121,10 @@ const Inbox = {
       const msg = [due && `${due} due today`, overdue && `${overdue} overdue`].filter(Boolean).join(' · ');
       toast(`Reminders: ${msg}`, 'info');
       try {
-        if ('Notification' in window) {
-          const show = () => new Notification('Tracker', { body: `You have ${msg}.`, icon: 'assets/logo.png', silent: false });
+        // Desktop app: a native notification branded as Tracker.
+        if (window.trackerDesktop?.notify) window.trackerDesktop.notify('Tracker reminders', `You have ${msg}.`);
+        else if ('Notification' in window) {
+          const show = () => new Notification('Tracker reminders', { body: `You have ${msg}.`, icon: 'assets/logo.png', silent: false });
           if (Notification.permission === 'granted') show();
           else if (Notification.permission !== 'denied') Notification.requestPermission().then(p => p === 'granted' && show());
         }

@@ -3,13 +3,24 @@
 import { downloads, LATEST_RELEASE_URL, VERSION } from '@/lib/downloads'
 import { usePlatform } from '@/lib/use-platform'
 import { Spread } from './Spread'
-import { AppleIcon, ArrowRight, DownloadIcon, WindowsIcon } from './icons'
-import { DownloadLink } from './download/DownloadProvider'
+import { AppleIcon, WindowsIcon } from './icons'
+import { SplitDownload, type SplitOption } from './download/SplitDownload'
+
+const win = downloads.windows
+const mac = downloads.mac
+
+const windowsOptions: SplitOption[] = [
+  { build: win.installer, title: 'Installer', sub: `Recommended · ${win.installer.size}` },
+  { build: win.portable, title: 'Portable', sub: `No install · ${win.portable.size}` },
+]
+const macOptions: SplitOption[] = [
+  { build: mac.arm64, title: 'Apple Silicon', sub: `M1 and later · ${mac.arm64.size}` },
+  { build: mac.x64, title: 'Intel', sub: `Intel Macs · ${mac.x64.size}` },
+]
 
 export function DownloadSection() {
   const { os, macArch } = usePlatform()
-  const macPrimary = macArch === 'x86' ? downloads.mac.x64 : downloads.mac.arm64
-  const macSecondary = macArch === 'x86' ? downloads.mac.arm64 : downloads.mac.x64
+  const macPrimary = macArch === 'x86' ? mac.x64 : mac.arm64
 
   return (
     <Spread
@@ -30,17 +41,10 @@ export function DownloadSection() {
                 </h3>
                 {os === 'windows' && <span className="detected">Your system</span>}
               </div>
-              <p className="platform-meta">Windows 10/11 · 64-bit · .exe installer · {downloads.windows.installer.size}</p>
+              <p className="platform-meta">Windows 10/11 · 64-bit · .exe installer · {win.installer.size}</p>
               <div className="platform-actions">
-                <DownloadLink className="btn btn-solid" build={downloads.windows.installer}>
-                  <DownloadIcon />
-                  Download installer
-                </DownloadLink>
-                <DownloadLink className="text-link" build={downloads.windows.portable}>
-                  Portable .exe <ArrowRight />
-                </DownloadLink>
+                <SplitDownload primary={win.installer} label="Download installer" options={windowsOptions} />
               </div>
-              <p className="platform-file">{downloads.windows.installer.file}</p>
             </li>
 
             <li className={`platform ${os === 'mac' ? 'is-detected' : ''}`} data-reveal-item style={{ ['--i' as string]: 1 }}>
@@ -52,13 +56,7 @@ export function DownloadSection() {
               </div>
               <p className="platform-meta">macOS 12+ · Apple Silicon &amp; Intel · .dmg · {macPrimary.size}</p>
               <div className="platform-actions">
-                <DownloadLink className="btn btn-solid" build={macPrimary}>
-                  <DownloadIcon />
-                  Download for {macPrimary.label}
-                </DownloadLink>
-                <DownloadLink className="text-link" build={macSecondary}>
-                  {macSecondary.label} <ArrowRight />
-                </DownloadLink>
+                <SplitDownload primary={macPrimary} label={`Download for ${macPrimary.label}`} options={macOptions} />
               </div>
               <p className="platform-note">
                 First launch: the macOS builds are unsigned, so right-click Tracker in Applications and choose{' '}

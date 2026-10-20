@@ -703,6 +703,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener('click', e => { if (!e.target.closest('#profileMenu')) UI.closeProfileMenu(); });
   UI.setTheme(UI.theme());
   window.trackerDesktop?.onWindowState(st => document.documentElement.classList.toggle('is-fullscreen', !!st.fullscreen));
+  // Tell the person if saving to disk fails (for example the disk is full).
+  window.trackerDesktop?.onSaveState?.(st => {
+    if (!st.ok) {
+      const full = st.reason === 'ENOSPC';
+      toast(full ? 'Disk full: changes can’t be saved yet. Your saved data is safe.'
+                 : 'Couldn’t save the latest changes. Retrying…', 'error');
+      _setStatus(full ? 'Not saved: disk full' : 'Not saved yet', 'error');
+    } else {
+      toast('Saving works again. All changes saved.', 'success');
+      _setStatus('All changes saved');
+    }
+  });
   window.addEventListener('resize', () => S.main === 'sheet' && _syncTabs());
 
   // Keep the loader up briefly so the first transition never flickers.

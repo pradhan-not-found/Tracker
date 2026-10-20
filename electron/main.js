@@ -41,6 +41,7 @@ async function openDatabase() {
   const wasmPath = require.resolve('sql.js/dist/sql-wasm.wasm').replace('app.asar', 'app.asar.unpacked');
   const SQL = await initSqlJs({ wasmBinary: fs.readFileSync(wasmPath) });
   storage = new Storage(SQL, app.getPath('userData'));
+  storage.onSaveState = state => BrowserWindow.getAllWindows().forEach(w => w.webContents.send('tracker:save-state', state));
   storage.open();
   storage.startSchedule();
 }
@@ -97,6 +98,10 @@ ipcMain.handle('tracker:import-backup', async e => {
   if (canceled || !filePaths?.[0]) return null;
   storage.replaceWith(fs.readFileSync(filePaths[0]), 'before-import');
   return path.basename(filePaths[0]);
+});
+
+ipcMain.on('tracker:notify', (_e, { title, body } = {}) => {
+  if (typeof title === 'string' && typeof body === 'string') notify(title.slice(0, 120), body.slice(0, 300));
 });
 
 // ── updates ─────────────────────────────────────────────────
@@ -241,8 +246,11 @@ function ensureWindowsShortcut() {
 }
 
 // System notification that brings Tracker to the front when clicked.
+// Only the installed app notifies: development and test runs use the raw
+// runtime, which Windows would label with the runtime's own name.
+const NOTIFY = app.isPackaged ? !process.env.TRACKER_USER_DATA : !!process.env.TRACKER_DEV_NOTIFICATIONS;
 function notify(title, body) {
-  if (!Notification.isSupported()) return;
+  if (!NOTIFY || !Notification.isSupported()) return;
   const n = new Notification({ title, body, icon: path.join(ASSETS, process.platform === 'win32' ? 'icon.ico' : 'icon.png'), silent: false });
   n.on('click', () => {
     if (!mainWindow) return;

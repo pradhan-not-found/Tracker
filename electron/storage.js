@@ -99,11 +99,11 @@ class Storage {
   markDirty() {
     this.dirty = true;
     this.changedSinceBackup = true;
-    if (!this.persistTimer) this.persistTimer = setTimeout(() => this.flush(), 250);
+    if (!this.persistTimer) this.persistTimer = setTimeout(() => { try { this.flush(); } catch {} }, 250);
     // Back up soon after changes, never more often than every 30 minutes.
     if (!this.editBackupTimer) {
       const wait = Math.max(5000, BACKUP_AFTER_EDIT_MS - (Date.now() - this.lastBackupAt));
-      this.editBackupTimer = setTimeout(() => { this.editBackupTimer = null; this.backup('auto'); }, wait);
+      this.editBackupTimer = setTimeout(() => { this.editBackupTimer = null; try { this.backup('auto'); } catch {} }, wait);
       this.editBackupTimer.unref?.();
     }
   }
@@ -117,12 +117,22 @@ class Storage {
     } catch { return false; }
   }
 
+  // If the disk is full (or the file can't be written) the changes stay in
+  // memory, the last saved file stays intact, and the save is retried.
   flush() {
     clearTimeout(this.persistTimer);
     this.persistTimer = null;
     if (!this.db) return;
-    writeFileDurable(this.dbPath, Buffer.from(this.db.export()));
+    try {
+      writeFileDurable(this.dbPath, Buffer.from(this.db.export()));
+    } catch (err) {
+      try { fs.unlinkSync(`${this.dbPath}.tmp`); } catch {}
+      this.persistTimer = setTimeout(() => { try { this.flush(); } catch {} }, 5000);
+      if (!this.saveError) { this.saveError = err.code || err.message; this.onSaveState?.({ ok: false, reason: this.saveError }); }
+      throw err;
+    }
     this.dirty = false;
+    if (this.saveError) { this.saveError = null; this.onSaveState?.({ ok: true }); }
   }
 
   // ── backups ────────────────────────────────────────────────

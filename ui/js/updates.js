@@ -94,8 +94,8 @@ const Updater = {
     if (ok) Updater.api.install();
   },
 
-  // Opens the release notes on GitHub in the browser.
+  // Shows the next version's release notes inside Tracker.
   notes() {
-    if (Updater.state?.releaseUrl) window.open(Updater.state.releaseUrl, '_blank');
+    if (Updater.state) WhatsNew.showRemote(Updater.state);
   }
 };
