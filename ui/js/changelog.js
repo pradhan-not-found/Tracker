@@ -7,6 +7,17 @@
 ============================================================= */
 const CHANGELOG = [
   {
+    "version": "2.4.4",
+    "date": "2026-10-20",
+    "title": "Tracker 2.4.4",
+    "summary": "A cleaner storage card.",
+    "highlights": [],
+    "improvements": [
+      "The storage card in Data and backups is simpler, with a folder icon and a clearer path."
+    ],
+    "fixes": []
+  },
+  {
     "version": "2.4.3",
     "date": "2026-10-20",
     "title": "Tracker 2.4.3",
