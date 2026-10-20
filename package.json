@@ -1,10 +1,13 @@
 {
   "name": "tracker",
   "productName": "Tracker",
-  "version": "2.3.0",
-  "description": "Tracker — a local-first attendance and records workspace",
+  "version": "2.3.1",
+  "description": "Tracker",
   "main": "electron/main.js",
-  "author": "pradhan-not-found",
+  "author": {
+    "name": "Souradeep Pradhan",
+    "url": "https://github.com/pradhan-not-found"
+  },
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -26,7 +29,7 @@
   "build": {
     "appId": "com.tracker.attendance",
     "productName": "Tracker",
-    "copyright": "Copyright © 2026 Tracker",
+    "copyright": "Copyright © 2026 Souradeep Pradhan",
     "directories": {
       "output": "dist",
       "buildResources": "assets"
@@ -62,7 +65,8 @@
         }
       ],
       "icon": "assets/icon.ico",
-      "executableName": "Tracker"
+      "executableName": "Tracker",
+      "legalTrademarks": "Tracker"
     },
     "nsis": {
       "oneClick": false,
@@ -134,6 +138,8 @@
         "repo": "Tracker",
         "releaseType": "release"
       }
-    ]
-  }
+    ],
+    "afterPack": "scripts/after-pack.js"
+  },
+  "homepage": "https://github.com/pradhan-not-found/Tracker"
 }

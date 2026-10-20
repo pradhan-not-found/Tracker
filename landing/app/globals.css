@@ -1357,7 +1357,8 @@ button {
 .coffee-qr img {
   width: 200px;
   height: 200px;
-  padding: 10px;
+  /* with the SVG's own 2-module margin this keeps a >= 4-module quiet zone (module = 3.5px at 200px) */
+  padding: 12px;
   box-sizing: content-box;
   background: #fff;
   border: 1px solid rgba(46, 46, 45, 0.1);

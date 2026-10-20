@@ -181,8 +181,8 @@ TRACKER_USER_DATA=/path/to/test-folder npm start
 2. Commit, then push a matching tag:
 
    ```bash
-   git tag v2.3.0
-   git push origin v2.3.0
+   git tag v2.3.1
+   git push origin v2.3.1
    ```
 
 The workflow checks that the tag matches the app version, builds every platform and publishes a GitHub Release with the installers and `SHA256SUMS.txt`. File names carry no version, so `releases/latest/download/...` links always point at the newest build.
