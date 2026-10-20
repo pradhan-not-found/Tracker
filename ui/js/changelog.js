@@ -7,6 +7,36 @@
 ============================================================= */
 const CHANGELOG = [
   {
+    "version": "2.4.2",
+    "date": "2026-10-20",
+    "title": "Tracker 2.4.2",
+    "summary": "Updates that take care of themselves.",
+    "highlights": [
+      {
+        "icon": "download",
+        "title": "Hands-free updates",
+        "text": "Tracker downloads the update, restarts by itself and installs it silently. No questions, no installer screens."
+      },
+      {
+        "icon": "bell",
+        "title": "Never miss an update",
+        "text": "When a new version is out, Tracker shows it every time it opens until you update."
+      },
+      {
+        "icon": "sparkle",
+        "title": "Buy me a coffee",
+        "text": "Support Tracker from the profile menu."
+      }
+    ],
+    "improvements": [
+      "On Mac, Tracker downloads the new version itself and opens it, ready to drag into Applications.",
+      "A clean line along the top of the main panel."
+    ],
+    "fixes": [
+      "Windows no longer shows the Electron icon in the taskbar for Tracker."
+    ]
+  },
+  {
     "version": "2.4.1",
     "date": "2026-10-20",
     "title": "Tracker 2.4.1",

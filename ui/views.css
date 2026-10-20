@@ -588,3 +588,22 @@ html:not(.is-desktop) .desktop-only { display: none !important; }
 .wn-older { display: flex; flex-direction: column; gap: 4px; padding-top: 12px; border-top: 1px solid var(--border); }
 .wn-older-item { display: flex; gap: 10px; font-size: 12.5px; color: var(--muted); }
 .wn-older-item b { color: var(--fg); font-weight: 600; min-width: 42px; font-variant-numeric: tabular-nums; }
+
+/* Update window */
+.upd-modal-hd { display: flex; align-items: center; gap: 14px; }
+.upd-modal-logo { width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--fg); color: var(--bg); box-shadow: 0 6px 16px -6px rgba(0,0,0,.35); }
+.upd-notes { max-height: min(46vh, 380px); overflow-y: auto; }
+
+/* Buy me a coffee */
+.coffee-modal { position: relative; width: min(360px, calc(100vw - 32px)); padding: 32px 28px 22px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.coffee-x { position: absolute; top: 12px; right: 12px; }
+.coffee-h { font-size: 19px; font-weight: 650; letter-spacing: -.03em; }
+.coffee-modal .modal-sub { margin-top: 4px; }
+.coffee-qr { margin: 20px 0 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.coffee-qr img { width: 200px; height: 200px; padding: 12px; border-radius: 16px; background: #fff; box-shadow: 0 0 0 1px var(--border), 0 10px 30px -14px rgba(0,0,0,.35); }
+.coffee-qr figcaption { font-size: 12px; color: var(--subtle); }
+.coffee-credit { width: 100%; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; }
+.coffee-made { color: var(--muted); }
+.coffee-who { display: inline-flex; align-items: center; gap: 8px; color: var(--fg); font-weight: 550; text-decoration: none; }
+.coffee-who:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.coffee-who img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }

@@ -214,6 +214,10 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></svg>
           Check for updates
         </button>
+        <button class="pm-item" onclick="UI.closeProfileMenu();Modal.open('modalCoffee')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13v5a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2.5v2.5M12 2.5v2.5"/></svg>
+          Buy me a coffee
+        </button>
         <div class="pm-theme">
           <span class="pm-theme-lbl">Theme</span>
           <div class="seg" id="themeSeg">
@@ -521,6 +525,47 @@
       <button class="btn btn-ghost" id="wnNotes">View full release notes</button>
       <button class="rich-btn modal-primary" id="wnOk" onclick="WhatsNew.ok()"><span>Got it</span></button>
     </div>
+  </div>
+</div>
+
+<!-- Update available (opens on every launch until installed) -->
+<div id="modalUpdate" class="overlay" onclick="if(event.target===this)Updater.later()">
+  <div class="modal modal-wide upd-modal" role="dialog" aria-labelledby="updTitle">
+    <div class="modal-hd">
+      <div class="upd-modal-hd">
+        <span class="upd-modal-logo"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect width="24" height="24" fill="currentColor" mask="url(#tracker-mark-cut)"/></svg></span>
+        <div>
+          <h3 id="updTitle">Update available</h3>
+          <p class="modal-sub" id="updSub"></p>
+        </div>
+      </div>
+      <button class="icon-btn" onclick="Updater.later()" aria-label="Later"><svg width="16" height="16"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-bd wn-body upd-notes" id="updNotes"></div>
+    <div class="modal-ft modal-ft-between">
+      <button class="btn btn-ghost" onclick="Updater.later()">Later</button>
+      <button class="rich-btn modal-primary" onclick="Updater.download()"><span>Update now</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Buy me a coffee -->
+<div id="modalCoffee" class="overlay" onclick="Modal.bg(event,'modalCoffee')">
+  <div class="modal coffee-modal" role="dialog" aria-labelledby="coffeeTitle">
+    <button class="icon-btn coffee-x" onclick="Modal.close('modalCoffee')" aria-label="Close"><svg width="16" height="16"><use href="#i-x"/></svg></button>
+    <h3 id="coffeeTitle" class="coffee-h">Buy me a coffee</h3>
+    <p class="modal-sub">If Tracker helps you, a coffee keeps it going.</p>
+    <figure class="coffee-qr">
+      <img src="assets/coffee-qr.svg" alt="UPI QR code to pay Souradeep Pradhan" width="200" height="200">
+      <figcaption>Scan with any UPI app</figcaption>
+    </figure>
+    <p class="coffee-credit">
+      <span class="coffee-made">Made by</span>
+      <a class="coffee-who" href="https://github.com/pradhan-not-found" target="_blank" rel="noopener noreferrer">
+        <img src="assets/avatar-souradeep.jpg" alt="" width="24" height="24">
+        <span>Souradeep Pradhan</span>
+      </a>
+    </p>
   </div>
 </div>
 

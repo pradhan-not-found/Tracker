@@ -1,14 +1,17 @@
 'use strict';
 /* =============================================================
-   Tracker: update notifications
-   Tells you when a new version is out and waits for you.
-   - Windows installer: downloads only after you click Download,
-     installs only after you click Restart (electron-updater).
+   Tracker: updates
+   Checks right after launch and a few times a day; the app asks on
+   every launch until the update is installed.
+   - Windows installer: downloads in the app, then installs silently
+     and reopens (electron-updater). No installer screens.
    - macOS and the portable .exe: unsigned builds cannot replace
-     themselves, so Download opens the right file in the browser.
+     themselves, so Tracker downloads the new file itself and opens it.
    Your data lives outside the app and is backed up before installing.
 ============================================================= */
 const { app, net, shell, BrowserWindow } = require('electron');
+const fs = require('fs');
+const path = require('path');
 
 const OWNER = 'pradhan-not-found';
 const REPO = 'Tracker';
@@ -66,7 +69,7 @@ class Updates {
   _available(version, notes, url) {
     const text = Array.isArray(notes) ? notes.map(n => n.note).join('\n') : String(notes || '');
     this._set({
-      status: 'available', version, url,
+      status: 'available', version, url, file: null,
       notes: text.replace(/<[^>]+>/g, '').replace(/\r/g, '').trim().slice(0, 1200),
       releaseUrl: `${RELEASES}/tag/v${version}`,
       checkedAt: Date.now()
@@ -101,26 +104,63 @@ class Updates {
 
   async download() {
     if (this.state.status !== 'available') return this.state;
+    this._set({ status: 'downloading', percent: 0 });
     if (this.updater) {
-      this._set({ status: 'downloading', percent: 0 });
-      this.updater.downloadUpdate().catch(err => this._set({ status: 'error', message: String(err?.message || err) }));
+      this.updater.downloadUpdate().catch(err => this._set({ status: 'error', message: String(err?.message || err).split('\n')[0] }));
     } else if (this.state.url) {
-      await shell.openExternal(this.state.url);
-      this._set({ status: 'opened' });
+      this._downloadFile(this.state.url).catch(err => this._set({ status: 'error', message: String(err?.message || err).split('\n')[0] }));
     }
     return this.state;
   }
 
+  // macOS / portable: fetch the new .dmg or .exe into Downloads with progress.
+  async _downloadFile(url) {
+    const res = await net.fetch(url, { headers: { 'User-Agent': `Tracker/${APP_VERSION}` } });
+    if (!res.ok || !res.body) throw new Error(`Download failed (${res.status})`);
+    const total = Number(res.headers.get('content-length')) || 0;
+    const name = decodeURIComponent(new URL(res.url || url).pathname.split('/').pop() || 'Tracker-update');
+    const dest = path.join(app.getPath('downloads'), name);
+    const part = `${dest}.download`;
+    const out = fs.createWriteStream(part);
+    let got = 0, lastPct = -1;
+    try {
+      for await (const chunk of res.body) {
+        got += chunk.length;
+        if (!out.write(chunk)) await new Promise(r => out.once('drain', r));
+        const pct = total ? Math.floor((got / total) * 100) : 0;
+        if (pct !== lastPct) { lastPct = pct; this._set({ status: 'downloading', percent: pct }); }
+      }
+      await new Promise((resolve, reject) => out.end(err => (err ? reject(err) : resolve())));
+    } catch (err) {
+      out.destroy(); try { fs.unlinkSync(part); } catch {}
+      throw err;
+    }
+    try { fs.unlinkSync(dest); } catch {}
+    fs.renameSync(part, dest);
+    this._set({ status: 'ready', file: dest });
+  }
+
+  // Installs without asking anything: data is saved and backed up first.
   install() {
-    if (this.state.status !== 'ready' || !this.updater) return;
+    if (this.state.status !== 'ready') return;
     try { this.beforeInstall?.(); } catch {}
-    setImmediate(() => this.updater.quitAndInstall(false, true));
+    if (this.updater) {
+      // Silent install into the same folder, then Tracker opens again.
+      setImmediate(() => this.updater.quitAndInstall(true, true));
+    } else if (this.state.file) {
+      // macOS: the disk image opens so Tracker can be replaced in Applications.
+      // Portable: the new copy starts. Either way this copy closes.
+      shell.openPath(this.state.file).then(err => {
+        if (err) this._set({ status: 'error', message: err });
+        else setTimeout(() => app.quit(), 800);
+      });
+    }
   }
 
   start() {
-    // Quietly check shortly after launch, then a few times a day. Never in development.
+    // Check right after launch, then a few times a day. Never in development.
     if (!app.isPackaged && !process.env.TRACKER_UPDATE_TEST) return;
-    setTimeout(() => this.check(), 10000).unref?.();
+    setTimeout(() => this.check(), 3000).unref?.();
     this.timer = setInterval(() => this.check(), CHECK_EVERY_MS);
     this.timer.unref?.();
   }

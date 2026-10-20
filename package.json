@@ -1,7 +1,7 @@
 {
   "name": "tracker",
   "productName": "Tracker",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "description": "Tracker",
   "main": "electron/main.js",
   "author": {

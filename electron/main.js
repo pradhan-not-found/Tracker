@@ -20,7 +20,9 @@ app.setName('Tracker');
 // Lets tests run against a throwaway data folder.
 if (process.env.TRACKER_USER_DATA) app.setPath('userData', process.env.TRACKER_USER_DATA);
 
-const APP_ID = 'com.tracker.attendance';
+// Development and test runs get their own ID, so Windows never mixes them up
+// with the installed app (it shows the icon of whichever shortcut owns the ID).
+const APP_ID = app.isPackaged ? 'com.tracker.attendance' : 'com.tracker.attendance.dev';
 // Icons are unpacked next to the archive in installed builds (asarUnpack), because
 // Windows and macOS read them by file path and cannot look inside app.asar.
 const ASSETS = path.join(__dirname, '..', 'assets').replace(`app.asar${path.sep}`, `app.asar.unpacked${path.sep}`);
@@ -220,6 +222,24 @@ function buildMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
+// Older development runs could leave a Start menu shortcut (named "Electron",
+// pointing at the development runtime) that claimed Tracker's ID, so Windows
+// showed the runtime's icon in the taskbar. The installed app removes any such
+// shortcut; its own "Tracker" shortcut is never touched.
+function removeStrayShortcuts() {
+  if (!app.isPackaged) return;
+  try {
+    const dir = path.join(app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs');
+    for (const name of fs.readdirSync(dir)) {
+      if (!name.toLowerCase().endsWith('.lnk') || name === 'Tracker.lnk') continue;
+      const file = path.join(dir, name);
+      let link;
+      try { link = shell.readShortcutLink(file); } catch { continue; }
+      if (link.appUserModelId === APP_ID && /[\\/]electron\.exe$/i.test(link.target || '')) fs.unlinkSync(file);
+    }
+  } catch {}
+}
+
 async function runSelfTest() {
   const done = (ok, detail) => {
     process.stdout.write(`TRACKER_SELFTEST ${ok ? 'OK' : 'FAIL'} ${JSON.stringify(detail)}
@@ -258,7 +278,7 @@ if (!SELFTEST && !app.requestSingleInstanceLock()) {
   });
 
   app.whenReady().then(async () => {
-    if (process.platform === 'win32') app.setAppUserModelId(APP_ID);
+    if (process.platform === 'win32') { app.setAppUserModelId(APP_ID); removeStrayShortcuts(); }
     // Packaged builds take the icon from the bundle; in development show ours, not Electron's.
     if (isMac && !app.isPackaged) app.dock?.setIcon(path.join(ASSETS, 'icon-mac.png'));
     app.setAboutPanelOptions({

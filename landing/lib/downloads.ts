@@ -4,7 +4,7 @@
  * Asset URLs are absolute GitHub URLs, so they work from any host.
  */
 export const REPO = 'pradhan-not-found/Tracker'
-export const VERSION = '2.4.1'
+export const VERSION = '2.4.2'
 
 export const REPO_URL = `https://github.com/${REPO}`
 export const RELEASES_URL = `${REPO_URL}/releases`

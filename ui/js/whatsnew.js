@@ -3,7 +3,6 @@
    Tracker: "What's new"
    - After an update, the first launch shows what changed since the
      version you used before (never on a brand-new install).
-   - "What's new" on the update card previews the next version's notes.
 ============================================================= */
 const WhatsNew = {
   RELEASES: 'https://github.com/pradhan-not-found/Tracker/releases',
@@ -63,28 +62,7 @@ const WhatsNew = {
     return `${hl ? `<div class="wn-hls">${hl}</div>` : ''}${list('Improvements', e.improvements)}${list('Fixes', e.fixes)}`;
   },
 
-  // Preview for an update that is available but not installed yet:
-  // the notes come from the GitHub release (markdown).
-  showRemote(st) {
-    document.getElementById('wnKicker').textContent = `Available · you're on ${st.current}`;
-    document.getElementById('wnTitle').textContent = `Tracker ${st.version}`;
-    document.getElementById('wnSummary').textContent = '';
-    document.getElementById('wnVersion').textContent = `Version ${st.version}`;
-    document.getElementById('wnBody').innerHTML = WhatsNew._markdown(st.notes) ||
-      `<p class="modal-info">Release notes are on GitHub.</p>`;
-    document.getElementById('wnNotes').onclick = () => window.open(st.releaseUrl || `${WhatsNew.RELEASES}/latest`, '_blank');
-    document.getElementById('wnOk').firstElementChild.textContent = st.mode === 'install' ? 'Download' : 'Download update';
-    document.getElementById('wnOk').dataset.action = 'download';
-    Modal.open('modalWhatsNew');
-  },
-
-  ok() {
-    const btn = document.getElementById('wnOk');
-    const action = btn.dataset.action;
-    delete btn.dataset.action;
-    Modal.close('modalWhatsNew');
-    if (action === 'download') Updater.download();
-  },
+  ok() { Modal.close('modalWhatsNew'); },
 
   // Small, safe markdown subset: headings, bullets, bold, links (as text).
   _markdown(md) {
