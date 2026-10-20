@@ -118,7 +118,7 @@ function DownloadDialog({
         <div className="dl-head">
           <div>
             <p className="dl-kicker">
-              <span className="dl-pulse" aria-hidden /> Downloading
+              Downloading
             </p>
             <h2 id="dl-dialog-title" className="dl-title">
               Your download has started.

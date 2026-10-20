@@ -92,7 +92,6 @@ export function AutoDownload() {
             {active ? (
               <div className="glass dl-card">
                 <p className="dl-kicker">
-                  <span className={`dl-pulse ${phase.kind === 'starting' ? 'is-waiting' : ''}`} aria-hidden />
                   {phase.kind === 'starting' ? 'Starting download' : 'Downloading'}
                 </p>
                 <DownloadDetails build={active} />
@@ -111,7 +110,6 @@ export function AutoDownload() {
             ) : (
               <div className="glass dl-card dl-card-empty">
                 <p className="dl-kicker">
-                  <span className={`dl-pulse is-waiting ${phase.kind === 'choose' ? 'is-idle' : ''}`} aria-hidden />
                   {phase.kind === 'choose' ? 'Nothing downloaded yet' : 'Detecting your system'}
                 </p>
                 {phase.kind === 'choose' && (
