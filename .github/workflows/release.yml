@@ -1,0 +1,44 @@
+name: Release
+
+# Push a tag like v2.4.0 (matching package.json, with notes in
+# ui/js/changelog.js) to build, test and publish a GitHub Release.
+
+on:
+  push:
+    tags: [ "v*" ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and test
+    uses: ./.github/workflows/build.yml
+
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Write release notes
+        run: node scripts/release-notes.js "${GITHUB_REF_NAME}" > release-notes.md && cat release-notes.md
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+
+      - name: Generate checksums
+        working-directory: release
+        run: sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Tracker ${{ github.ref_name }}
+          body_path: release-notes.md
+          files: release/*

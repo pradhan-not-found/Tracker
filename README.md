@@ -175,7 +175,7 @@ TRACKER_USER_DATA=/path/to/test-folder npm start
 
 ## Releasing
 
-[`build.yml`](.github/workflows/build.yml) builds Windows and macOS packages on every push to `main`. To publish a release:
+[`build.yml`](.github/workflows/build.yml) builds and tests the Windows and macOS packages on every push to `main`. [`release.yml`](.github/workflows/release.yml) runs only for version tags: it reuses the same build and tests, then publishes the release. To publish one:
 
 1. Bump `version` in `package.json` (and `VERSION` in `landing/lib/downloads.ts`), and add the release notes to `ui/js/changelog.js`. They appear in the app's "What's new" and become the GitHub release notes.
 2. Commit, then push a matching tag:
