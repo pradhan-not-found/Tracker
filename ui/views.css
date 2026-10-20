@@ -563,6 +563,7 @@ html:not(.is-desktop) .desktop-only { display: none !important; }
 .upd-hd { display: flex; align-items: center; gap: 8px; }
 .upd-ic { width: 24px; height: 24px; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--p-blue-bg); color: var(--p-blue-fg); }
 .upd-ic-ready { background: var(--p-green-bg); color: var(--p-green-fg); }
+.upd-ic-logo { background: var(--fg); color: var(--bg); box-shadow: 0 1px 2px rgba(0,0,0,.18); }
 .upd-title { flex: 1; min-width: 0; font-size: 12.5px; font-weight: 600; letter-spacing: -.01em; }
 .upd-pct { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .upd-text { font-size: 11.5px; color: var(--muted); line-height: 1.45; }

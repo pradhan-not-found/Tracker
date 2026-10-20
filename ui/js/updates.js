@@ -32,7 +32,7 @@ const Updater = {
       if (!st.manual && (await Updater.dismissed()) === st.version) { Updater.hide(); return; }
       if (prev?.status !== 'available') toast(`Tracker ${st.version} is available. See the card in the sidebar.`, 'info');
       html = `
-        <div class="upd-hd"><span class="upd-ic">${icon('sparkle', 14, 1.8)}</span><span class="upd-title">Tracker ${escH(st.version)} is available</span>
+        <div class="upd-hd"><span class="upd-ic upd-ic-logo"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect width="24" height="24" fill="currentColor" mask="url(#tracker-mark-cut)"/></svg></span><span class="upd-title">Tracker ${escH(st.version)} is available</span>
           <button class="icon-btn icon-btn-xs" onclick="Updater.later()" title="Later" aria-label="Remind me later">${icon('x', 12, 2)}</button></div>
         <p class="upd-text">You're on ${escH(st.current)}. ${st.mode === 'install' ? 'Download it now and install when you’re ready.' : 'Download the new version and open it to update.'} Your data stays exactly as it is.</p>
         <div class="upd-actions">
