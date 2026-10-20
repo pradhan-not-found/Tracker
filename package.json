@@ -13,10 +13,12 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
-    "build:win": "electron-builder --win --x64",
-    "build:mac": "electron-builder --mac --arm64 --x64",
-    "build:linux": "electron-builder --linux",
-    "build:dir": "electron-builder --dir"
+    "build:win": "node scripts/build.js win",
+    "build:mac": "node scripts/build.js mac",
+    "build:linux": "node scripts/build.js linux",
+    "build:dir": "node scripts/build.js dir",
+    "build": "node scripts/build.js",
+    "release-notes": "node scripts/release-notes.js"
   },
   "dependencies": {
     "electron-updater": "6.8.10",

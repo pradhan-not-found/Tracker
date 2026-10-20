@@ -22,3 +22,6 @@ npm-debug.log*
 
 # Local reference checkout (not part of Tracker)
 .Atlas/
+
+# Local build caches and temp files (scripts/build.js)
+.cache/
