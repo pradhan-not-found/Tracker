@@ -7,6 +7,17 @@
 ============================================================= */
 const CHANGELOG = [
   {
+    "version": "2.4.3",
+    "date": "2026-10-20",
+    "title": "Tracker 2.4.3",
+    "summary": "A simpler Data and backups panel.",
+    "highlights": [],
+    "improvements": [
+      "Data and backups is shorter and cleaner, with a new storage icon."
+    ],
+    "fixes": []
+  },
+  {
     "version": "2.4.2",
     "date": "2026-10-20",
     "title": "Tracker 2.4.2",
