@@ -14,6 +14,7 @@ const isDev = process.argv.includes('--dev');
 // Lets tests run against a throwaway data folder.
 if (process.env.TRACKER_USER_DATA) app.setPath('userData', process.env.TRACKER_USER_DATA);
 
+const APP_ID = 'com.tracker.attendance';
 const ASSETS = path.join(__dirname, '..', 'assets');
 // Windows wants the multi-size .ico for crisp taskbar/alt-tab icons.
 const APP_ICON = path.join(ASSETS, process.platform === 'win32' ? 'icon.ico' : 'icon.png');
@@ -114,6 +115,18 @@ function createWindow() {
     }
   });
 
+  // Windows groups taskbar buttons by AppUserModelID and, without a matching
+  // shortcut (e.g. `npm start`), falls back to electron.exe's icon. Give the
+  // window explicit taskbar details so Tracker's icon always shows.
+  if (process.platform === 'win32') {
+    mainWindow.setAppDetails({
+      appId: APP_ID,
+      appIconPath: path.join(ASSETS, 'icon.ico'),
+      appIconIndex: 0,
+      relaunchDisplayName: 'Tracker'
+    });
+  }
+
   mainWindow.loadFile(path.join(__dirname, '..', 'ui', 'index.html'));
   mainWindow.once('ready-to-show', () => mainWindow.show());
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
@@ -177,7 +190,7 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.whenReady().then(async () => {
-    if (process.platform === 'win32') app.setAppUserModelId('com.tracker.attendance');
+    if (process.platform === 'win32') app.setAppUserModelId(APP_ID);
     // Packaged builds take the icon from the bundle; in development show ours, not Electron's.
     if (isMac && !app.isPackaged) app.dock?.setIcon(path.join(ASSETS, 'icon-mac.png'));
     app.setAboutPanelOptions({
