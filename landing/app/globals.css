@@ -310,9 +310,7 @@ button {
   transition: stroke-dashoffset 3.2s var(--ease-out);
   transition-delay: calc(var(--k, 0) * 0.12s);
 }
-.js .arcs[data-reveal]:not(.is-in) path {
-  stroke-dashoffset: 1;
-}
+
 
 /* --------------------------------------------------------------------------
    Reveal (headline lines rise, lists stagger)
@@ -1398,7 +1396,5 @@ button {
   .js [data-reveal].is-in [data-reveal-item] {
     animation: none;
   }
-  .js .arcs[data-reveal]:not(.is-in) path {
-    stroke-dashoffset: 0;
-  }
+  
 }
