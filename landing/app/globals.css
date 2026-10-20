@@ -891,14 +891,34 @@ button {
   gap: 8px;
 }
 .footer-col a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font-size: 15px;
+  color: var(--ink);
+}
+.footer-col a .footer-link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--ink-muted);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.footer-col a:hover .footer-link-icon {
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+.footer-col a .footer-link-label {
   background-image: linear-gradient(currentColor, currentColor);
   background-size: 0% 1px;
   background-repeat: no-repeat;
   background-position: 0 100%;
   transition: background-size 0.4s var(--ease-out);
 }
-.footer-col a:hover {
+.footer-col a:hover .footer-link-label {
   background-size: 100% 1px;
 }
 .footer-bottom {

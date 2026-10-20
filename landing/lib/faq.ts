@@ -10,7 +10,7 @@ export const faqs: FaqItem[] = [
   },
   {
     q: 'Where is my data stored?',
-    a: 'In a SQLite database on your computer. Nothing is uploaded anywhere, because there is no Tracker server to upload to.',
+    a: 'Directly on your desktop. Tracker is entirely local-first, so all your data remains securely on your computer in your complete control. Nothing is ever uploaded to external servers or the cloud.',
   },
   {
     q: 'macOS says the app can’t be opened. What do I do?',
