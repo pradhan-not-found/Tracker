@@ -66,6 +66,11 @@
         </div>
 
         <form id="signInForm" class="auth-form" autocomplete="on">
+          <div class="account-card" id="siAccount" style="display:none" data-reveal>
+            <span class="account-avatar"><img id="siAccImg" alt="" style="display:none"><span id="siAccIni">?</span></span>
+            <span class="account-info"><span class="account-name" id="siAccName"></span><span class="account-email" id="siAccEmail"></span></span>
+            <span class="account-badge">Remembered</span>
+          </div>
           <input id="siEmail" class="field-inp field-lg" type="email" placeholder="Email address" autocomplete="email" spellcheck="false" data-reveal>
           <div class="pass-wrap" data-reveal>
             <input id="siPass" class="field-inp field-lg" type="password" placeholder="Password" autocomplete="current-password">
@@ -77,6 +82,7 @@
           <button type="submit" class="rich-btn rich-btn-lg" data-reveal><span>Log in</span></button>
         </form>
 
+        <button type="button" class="auth-switch" id="siOther" onclick="Auth.useAnotherAccount()" style="display:none" data-reveal>Not you? <b>Use another account</b></button>
         <button type="button" class="auth-switch" onclick="switchForm('register')" data-reveal>Don't have an account? <b>Sign up</b></button>
       </div>
 
@@ -199,6 +205,10 @@
         <button class="pm-item" onclick="UI.closeProfileMenu();showProfileModal()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
           Profile
+        </button>
+        <button class="pm-item desktop-only" onclick="UI.closeProfileMenu();DataPanel.open()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/><path d="M4 11.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>
+          Data &amp; backups
         </button>
         <div class="pm-theme">
           <span class="pm-theme-lbl">Theme</span>
@@ -482,6 +492,40 @@
   </div>
 </div>
 
+<!-- Data & backups -->
+<div id="modalData" class="overlay" onclick="Modal.bg(event,'modalData')">
+  <div class="modal modal-wide" role="dialog" aria-labelledby="modalDataTitle">
+    <div class="modal-hd">
+      <div>
+        <h3 id="modalDataTitle">Data &amp; backups</h3>
+        <p class="modal-sub">Everything is stored on this computer and backed up automatically.</p>
+      </div>
+      <button class="icon-btn" onclick="Modal.close('modalData')" aria-label="Close"><svg width="16" height="16"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-bd">
+      <div class="data-card">
+        <span class="data-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/><path d="M4 11.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg></span>
+        <div class="data-main">
+          <span class="data-title">Saved on this computer <span class="data-ok">Protected</span></span>
+          <span class="data-path" id="dataPath"></span>
+          <span class="data-meta"><span id="dataSize"></span> · last backup <span id="dataLast"></span> · <span id="dataCount"></span></span>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="DataPanel.api.openFolder()">Open folder</button>
+      </div>
+      <p class="modal-info">Updating, rebuilding or reinstalling Tracker never touches this folder. Every save is written safely to disk. Backups are made as you work, when Tracker starts and when it closes, and the latest 30 are kept. If the data ever can't be read, Tracker restores the newest good backup on its own.</p>
+      <div class="col-builder-hd">
+        <span class="field-label">Backups</span>
+        <button class="btn btn-soft btn-sm" onclick="DataPanel.backupNow(this)">Back up now</button>
+      </div>
+      <div class="bk-list" id="dataBackups"></div>
+    </div>
+    <div class="modal-ft modal-ft-between">
+      <button class="btn btn-ghost" onclick="DataPanel.importFile()">Restore from file…</button>
+      <button class="rich-btn modal-primary" onclick="DataPanel.exportFile()"><span>Save a backup file…</span></button>
+    </div>
+  </div>
+</div>
+
 <!-- Edit Profile -->
 <div id="modalProfile" class="overlay" onclick="Modal.bg(event,'modalProfile')">
   <div class="modal" role="dialog" aria-labelledby="modalProfileTitle">
@@ -539,6 +583,7 @@
 <script src="js/table.js"></script>
 <script src="js/views.js"></script>
 <script src="js/io.js"></script>
+<script src="js/data.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -15,15 +15,76 @@ async function verifyPassword(pass, stored) {
 }
 
 const Auth = {
+  // Sessions live in the database (tracker_settings), so you stay signed in
+  // across restarts and updates until you choose Sign out.
   async init() {
-    let session = null;
-    try { session = JSON.parse(localStorage.getItem('tracker_session') || 'null'); } catch {}
+    let session = await Settings.get('session');
+    if (!session) {
+      // migrate the older browser-storage session
+      try { session = JSON.parse(localStorage.getItem('tracker_session') || 'null'); } catch {}
+    }
     if (session?.email) {
       const rows = await sqlObjects(`SELECT * FROM tracker_users WHERE email='${esc(session.email)}' LIMIT 1`);
       if (rows.length) { await Auth._enter(rows[0]); return; }
-      try { localStorage.removeItem('tracker_session'); } catch {}
+      await Settings.del('session');
     }
+    try { localStorage.removeItem('tracker_session'); } catch {}
+    await Auth.showLogin();
+  },
+
+  // Login screen: if someone signed in on this computer before, greet them by
+  // name and only ask for the password.
+  _remembered: null,
+  async showLogin() {
+    const last = await Settings.get('last_account');
+    let user = null;
+    if (last?.email) {
+      const rows = await sqlObjects(`SELECT first_name, last_name, email, avatar_data FROM tracker_users WHERE email='${esc(last.email)}' LIMIT 1`);
+      user = rows[0] || null;
+    }
+    Auth._remembered = user;
+    Auth._renderRemembered();
     showScreen('screen-login');
+  },
+
+  _renderRemembered() {
+    const u = Auth._remembered;
+    const card = document.getElementById('siAccount');
+    const email = document.getElementById('siEmail');
+    const title = document.querySelector('#formSignIn .auth-title');
+    const sub = document.querySelector('#formSignIn .auth-subtitle');
+    const other = document.getElementById('siOther');
+    if (u) {
+      const name = `${u.first_name} ${u.last_name || ''}`.trim();
+      document.getElementById('siAccName').textContent = name;
+      document.getElementById('siAccEmail').textContent = u.email;
+      const img = document.getElementById('siAccImg'), ini = document.getElementById('siAccIni');
+      ini.textContent = (u.first_name[0] || '?').toUpperCase();
+      if (u.avatar_data) { img.src = u.avatar_data; img.style.display = ''; ini.style.display = 'none'; }
+      else { img.removeAttribute('src'); img.style.display = 'none'; ini.style.display = ''; }
+      email.value = u.email;
+      email.style.display = 'none';
+      card.style.display = '';
+      other.style.display = '';
+      title.textContent = `Welcome back, ${u.first_name}`;
+      sub.textContent = 'Enter your password to continue';
+    } else {
+      card.style.display = 'none';
+      other.style.display = 'none';
+      email.style.display = '';
+      title.textContent = 'Welcome back';
+      sub.textContent = 'Enter your credentials to access Tracker';
+    }
+  },
+
+  useAnotherAccount() {
+    Auth._remembered = null;
+    document.getElementById('siEmail').value = '';
+    document.getElementById('siPass').value = '';
+    document.getElementById('siErr').textContent = '';
+    Auth._renderRemembered();
+    Motion.reveal(document.getElementById('formSignIn'), { duration: .7, stagger: .06, y: 14 });
+    document.getElementById('siEmail').focus();
   },
 
   async _enter(row, { welcome } = {}) {
@@ -31,11 +92,14 @@ const Auth = {
       id: row.id, firstName: row.first_name, lastName: row.last_name || '',
       email: row.email, avatarData: row.avatar_data || null
     };
-    try { localStorage.setItem('tracker_session', JSON.stringify({ email: row.email })); } catch {}
+    await Settings.set('session', { email: row.email, since: nowIso() });
+    await Settings.set('last_account', { email: row.email });
+    try { localStorage.removeItem('tracker_session'); } catch {}
     Auth._updateSidebarUI();
     showScreen('screen-app');
     await App.init();
     if (welcome) toast(welcome, 'success');
+    DataPanel.announce();
   },
 
   _updateSidebarUI() {
@@ -105,15 +169,17 @@ const Auth = {
     } finally { done(); }
   },
 
-  logout() {
+  async logout() {
     _currentUser = null;
+    await Settings.del('session');
     try { localStorage.removeItem('tracker_session'); } catch {}
     App.reset();
     document.getElementById('formRegister').style.display = 'none';
     document.getElementById('formSignIn').style.display = '';
     document.getElementById('siErr').textContent = '';
     document.getElementById('regErr').textContent = '';
-    showScreen('screen-login');
+    document.getElementById('siPass').value = '';
+    await Auth.showLogin();
   },
 
   async saveProfile() {

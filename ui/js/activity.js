@@ -122,7 +122,7 @@ const Inbox = {
       toast(`Reminders: ${msg}`, 'info');
       try {
         if ('Notification' in window) {
-          const show = () => new Notification('Tracker', { body: `You have ${msg}.`, silent: false });
+          const show = () => new Notification('Tracker', { body: `You have ${msg}.`, icon: 'assets/logo.png', silent: false });
           if (Notification.permission === 'granted') show();
           else if (Notification.permission !== 'denied') Notification.requestPermission().then(p => p === 'granted' && show());
         }

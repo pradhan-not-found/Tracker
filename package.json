@@ -1,7 +1,7 @@
 {
   "name": "tracker",
   "productName": "Tracker",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Tracker — a local-first attendance and records workspace",
   "main": "electron/main.js",
   "author": "pradhan-not-found",
@@ -70,14 +70,15 @@
       "createStartMenuShortcut": true,
       "shortcutName": "Tracker",
       "uninstallDisplayName": "Tracker",
-      "artifactName": "Tracker-${version}-windows-x64-setup.${ext}",
+      "artifactName": "Tracker-windows-x64-setup.${ext}",
       "installerIcon": "assets/icon.ico",
       "uninstallerIcon": "assets/icon.ico",
       "installerHeaderIcon": "assets/icon.ico",
-      "runAfterFinish": true
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
     },
     "portable": {
-      "artifactName": "Tracker-${version}-windows-x64-portable.${ext}"
+      "artifactName": "Tracker-windows-x64-portable.${ext}"
     },
     "mac": {
       "target": [
@@ -90,7 +91,7 @@
       "hardenedRuntime": false,
       "darkModeSupport": true,
       "minimumSystemVersion": "12.0",
-      "artifactName": "Tracker-${version}-macos-${arch}.${ext}"
+      "artifactName": "Tracker-macos-${arch}.${ext}"
     },
     "dmg": {
       "title": "Tracker ${version}",

@@ -1,7 +1,7 @@
 name: Landing page
 
-# Builds the Next.js landing page on every change; deploys it to GitHub Pages
-# from main. Enable Pages once: Settings → Pages → Source: "GitHub Actions".
+# Checks that the Next.js landing page builds. Deployment is handled by
+# Vercel (project Root Directory: landing), which builds on every push.
 
 on:
   push:
@@ -13,12 +13,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
 
 jobs:
   build:
@@ -37,23 +31,5 @@ jobs:
 
       - run: npm ci
 
-      - name: Build static site
+      - name: Type-check and build
         run: npm run build
-        env:
-          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
-
-      - uses: actions/upload-pages-artifact@v3
-        if: github.event_name != 'pull_request'
-        with:
-          path: landing/out
-
-  deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4

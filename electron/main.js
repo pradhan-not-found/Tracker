@@ -2,11 +2,13 @@
 /* =============================================================
    Tracker — Electron main process
    Hosts ui/ in a frameless-feel window and serves the SQLite
-   bridge (sql.js, persisted to the user's app-data folder).
+   bridge (sql.js, stored durably in the user's app-data folder,
+   with automatic backups: see storage.js).
 ============================================================= */
-const { app, BrowserWindow, ipcMain, nativeTheme, shell, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, nativeTheme, shell, Menu, dialog, powerMonitor } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { Storage } = require('./storage');
 
 const isMac = process.platform === 'darwin';
 const isDev = process.argv.includes('--dev');
@@ -19,8 +21,7 @@ const ASSETS = path.join(__dirname, '..', 'assets');
 // Windows wants the multi-size .ico for crisp taskbar/alt-tab icons.
 const APP_ICON = path.join(ASSETS, process.platform === 'win32' ? 'icon.ico' : 'icon.png');
 
-let db = null;
-let dbPath = '';
+let storage = null;
 let mainWindow = null;
 
 // ─────────────────────────────────────────────────────────────
@@ -30,25 +31,13 @@ async function openDatabase() {
   const initSqlJs = require('sql.js/dist/sql-wasm.js');
   const wasmPath = require.resolve('sql.js/dist/sql-wasm.wasm').replace('app.asar', 'app.asar.unpacked');
   const SQL = await initSqlJs({ wasmBinary: fs.readFileSync(wasmPath) });
-
-  dbPath = path.join(app.getPath('userData'), 'tracker.db');
-  db = fs.existsSync(dbPath) ? new SQL.Database(fs.readFileSync(dbPath)) : new SQL.Database();
-  db.run('PRAGMA foreign_keys = ON');
+  storage = new Storage(SQL, app.getPath('userData'));
+  storage.open();
+  storage.startSchedule();
 }
 
-// Writes are coalesced: the whole database is serialised at most every 250ms,
-// and always flushed before quit.
-let persistTimer = null;
 function flushDatabase() {
-  clearTimeout(persistTimer);
-  persistTimer = null;
-  if (!db) return;
-  const tmp = dbPath + '.tmp';
-  fs.writeFileSync(tmp, Buffer.from(db.export()));
-  fs.renameSync(tmp, dbPath);
-}
-function persistDatabase() {
-  if (!persistTimer) persistTimer = setTimeout(flushDatabase, 250);
+  try { storage?.close(); } catch (err) { console.error('Could not save the database', err); }
 }
 
 const READ_ONLY = /^\s*(SELECT|PRAGMA\s+table_info|WITH)\b/i;
@@ -56,7 +45,7 @@ const READ_ONLY = /^\s*(SELECT|PRAGMA\s+table_info|WITH)\b/i;
 // Mirrors the Swift bridge: { columns, rows } with rows as positional arrays.
 function runQuery(query) {
   if (typeof query !== 'string' || !query.trim()) throw new Error('Empty query');
-  const stmt = db.prepare(query);
+  const stmt = storage.db.prepare(query);
   try {
     const columns = stmt.getColumnNames();
     const rows = [];
@@ -64,11 +53,43 @@ function runQuery(query) {
     return { columns, rows };
   } finally {
     stmt.free();
-    if (!READ_ONLY.test(query)) persistDatabase();
+    if (!READ_ONLY.test(query)) storage.markDirty();
   }
 }
 
 ipcMain.handle('tracker:query', (_e, query) => runQuery(query));
+// ── data & backups ──────────────────────────────────────────
+ipcMain.handle('tracker:data-info', () => storage.info());
+ipcMain.handle('tracker:backup-now', () => { storage.flush(); return storage.backup('manual'); });
+ipcMain.handle('tracker:open-data-folder', () => shell.openPath(storage.dir));
+ipcMain.handle('tracker:restore-backup', (_e, name) => { storage.restore(name); return true; });
+
+ipcMain.handle('tracker:export-backup', async e => {
+  const win = BrowserWindow.fromWebContents(e.sender);
+  const d = new Date();
+  const { canceled, filePath } = await dialog.showSaveDialog(win, {
+    title: 'Save a backup of your Tracker data',
+    defaultPath: path.join(app.getPath('documents'), `Tracker backup ${d.toISOString().slice(0, 10)}.trackerdb`),
+    filters: [{ name: 'Tracker backup', extensions: ['trackerdb', 'db'] }]
+  });
+  if (canceled || !filePath) return null;
+  storage.flush();
+  fs.copyFileSync(storage.dbPath, filePath);
+  return filePath;
+});
+
+ipcMain.handle('tracker:import-backup', async e => {
+  const win = BrowserWindow.fromWebContents(e.sender);
+  const { canceled, filePaths } = await dialog.showOpenDialog(win, {
+    title: 'Restore Tracker data from a backup file',
+    properties: ['openFile'],
+    filters: [{ name: 'Tracker backup', extensions: ['trackerdb', 'db', 'sqlite'] }]
+  });
+  if (canceled || !filePaths?.[0]) return null;
+  storage.replaceWith(fs.readFileSync(filePaths[0]), 'before-import');
+  return path.basename(filePaths[0]);
+});
+
 ipcMain.handle('tracker:open-external', (_e, url) => {
   if (/^https?:\/\//i.test(url)) return shell.openExternal(url);
 });
@@ -126,6 +147,9 @@ function createWindow() {
       relaunchDisplayName: 'Tracker'
     });
   }
+
+  // Save any pending change the moment the window starts closing.
+  mainWindow.on('close', flushDatabase);
 
   mainWindow.loadFile(path.join(__dirname, '..', 'ui', 'index.html'));
   mainWindow.once('ready-to-show', () => mainWindow.show());
@@ -212,4 +236,10 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.on('before-quit', flushDatabase);
+  // Never lose the last edits to sleep, shutdown, logoff or a crash.
+  app.whenReady().then(() => {
+    ['suspend', 'shutdown', 'lock-screen'].forEach(ev => powerMonitor.on(ev, flushDatabase));
+  });
+  process.on('exit', flushDatabase);
+  process.on('uncaughtException', err => { console.error(err); flushDatabase(); });
 }

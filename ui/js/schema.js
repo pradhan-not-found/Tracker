@@ -132,6 +132,10 @@ const Schema = {
       action TEXT NOT NULL,
       detail TEXT
     )`);
+    await sql(`CREATE TABLE IF NOT EXISTS tracker_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT
+    )`);
     await sql('CREATE INDEX IF NOT EXISTS idx_activity_at ON tracker_activity(at)');
     await sql('CREATE INDEX IF NOT EXISTS idx_activity_table ON tracker_activity(table_name, row_id)');
   },
@@ -244,6 +248,24 @@ const Schema = {
     await sql(`DROP TABLE IF EXISTS ${qi(table)}`);
     await sql(`DELETE FROM tracker_sheets WHERE table_name='${esc(table)}'`);
     await sql(`DELETE FROM tracker_columns WHERE table_name='${esc(table)}'`);
+  }
+};
+
+// Small key/value store kept inside the database, so it travels with the data
+// (sessions, the remembered account) instead of living in browser storage.
+const Settings = {
+  async get(key) {
+    const r = await sql(`SELECT value FROM tracker_settings WHERE key='${esc(key)}'`);
+    const v = r.rows?.[0]?.[0];
+    if (v === undefined || v === null) return null;
+    try { return JSON.parse(v); } catch { return null; }
+  },
+  async set(key, value) {
+    await sql(`INSERT INTO tracker_settings (key, value) VALUES ('${esc(key)}', '${esc(JSON.stringify(value))}')
+      ON CONFLICT(key) DO UPDATE SET value=excluded.value`);
+  },
+  async del(key) {
+    await sql(`DELETE FROM tracker_settings WHERE key='${esc(key)}'`);
   }
 };
 

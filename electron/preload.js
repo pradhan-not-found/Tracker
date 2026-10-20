@@ -6,5 +6,13 @@ contextBridge.exposeInMainWorld('trackerDesktop', {
   query: (sql) => ipcRenderer.invoke('tracker:query', sql),
   setTheme: (mode) => ipcRenderer.send('tracker:theme', mode),
   windowAction: (action) => ipcRenderer.send('tracker:window', action),
-  onWindowState: (cb) => ipcRenderer.on('tracker:window-state', (_e, state) => cb(state))
+  onWindowState: (cb) => ipcRenderer.on('tracker:window-state', (_e, state) => cb(state)),
+  data: {
+    info: () => ipcRenderer.invoke('tracker:data-info'),
+    backupNow: () => ipcRenderer.invoke('tracker:backup-now'),
+    restore: (name) => ipcRenderer.invoke('tracker:restore-backup', name),
+    exportFile: () => ipcRenderer.invoke('tracker:export-backup'),
+    importFile: () => ipcRenderer.invoke('tracker:import-backup'),
+    openFolder: () => ipcRenderer.invoke('tracker:open-data-folder')
+  }
 });

@@ -30,7 +30,7 @@ let showScreen = function (id) {
   screen.classList.add('active');
   if (id === 'screen-login') {
     Motion.reveal(screen);
-    setTimeout(() => screen.querySelector('.auth-content:not([style*="none"]) .field-inp')?.focus(), 250);
+    setTimeout(() => [...screen.querySelectorAll('.auth-content:not([style*="none"]) .field-inp')].find(el => el.offsetParent !== null)?.focus(), 250);
   }
   if (id === 'screen-app' && Motion.on && screen.offsetParent !== null) {
     gsap.fromTo(screen.querySelectorAll('.sidebar-head, .sb-nav, .sidebar-body, .sidebar-foot'),
