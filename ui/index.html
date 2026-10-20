@@ -14,128 +14,99 @@
      LOGIN / REGISTER SCREEN
 ════════════════════════════════════════ -->
 <div id="screen-login" class="screen active">
-  <div class="auth-layout">
+  <div class="auth-screen">
+    <div class="auth-container">
 
-    <!-- Left branding panel -->
-    <div class="auth-brand">
-      <div class="auth-brand-inner">
-        <div class="auth-brand-logo">
-          <img src="assets/logo.png" alt="Tracker" class="auth-brand-img" onerror="this.style.display='none';document.getElementById('authBrandFallback').style.display='flex'">
-          <div id="authBrandFallback" class="auth-brand-fallback">T</div>
-        </div>
-        <h1 class="auth-brand-name">Tracker</h1>
-        <p class="auth-brand-tagline">Professional data management<br>for schools and institutions.</p>
-        <div class="auth-brand-features">
-          <div class="auth-feat">
-            <div class="auth-feat-dot"></div>
-            <span>Create unlimited workspaces</span>
-          </div>
-          <div class="auth-feat">
-            <div class="auth-feat-dot"></div>
-            <span>Excel-like data sheets</span>
-          </div>
-          <div class="auth-feat">
-            <div class="auth-feat-dot"></div>
-            <span>Import &amp; Export CSV</span>
-          </div>
-          <div class="auth-feat">
-            <div class="auth-feat-dot"></div>
-            <span>All data stored locally</span>
-          </div>
-        </div>
+      <!-- Logo & Branding -->
+      <div class="auth-logo-wrap">
+        <img src="assets/logo.png" alt="Tracker" class="auth-logo-img" onerror="this.style.display='none';document.getElementById('authBrandFallback').style.display='flex'">
+        <div id="authBrandFallback" class="auth-logo-fallback">T</div>
       </div>
-    </div>
 
-    <!-- Right form panel -->
-    <div class="auth-form-panel">
-      <div class="auth-form-wrap">
+      <!-- SIGN IN FORM -->
+      <div id="formSignIn" class="auth-content">
+        <h1 class="auth-title">Welcome back</h1>
+        <p class="auth-subtitle">Sign in to your Tracker account</p>
 
-        <!-- SIGN IN FORM -->
-        <div id="formSignIn" class="auth-card">
-          <h2 class="auth-title">Welcome back</h2>
-          <p class="auth-subtitle">Sign in to your Tracker account</p>
-
-          <form id="signInForm" class="auth-form" autocomplete="on">
-            <div class="field">
-              <label class="field-label" for="siEmail">Email address</label>
-              <input id="siEmail" class="field-inp" type="email" placeholder="you@example.com" autocomplete="email" spellcheck="false">
+        <form id="signInForm" class="auth-form" autocomplete="on">
+          <div class="field">
+            <label class="field-label" for="siEmail">Email address</label>
+            <input id="siEmail" class="field-inp" type="email" placeholder="you@example.com" autocomplete="email" spellcheck="false">
+          </div>
+          <div class="field">
+            <label class="field-label" for="siPass">Password</label>
+            <div class="pass-wrap">
+              <input id="siPass" class="field-inp" type="password" placeholder="Enter your password" autocomplete="current-password">
+              <button type="button" class="pass-toggle" onclick="togglePass('siPass',this)" tabindex="-1">
+                <svg id="siPassEye" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
             </div>
-            <div class="field">
-              <label class="field-label" for="siPass">Password</label>
-              <div class="pass-wrap">
-                <input id="siPass" class="field-inp" type="password" placeholder="Enter your password" autocomplete="current-password">
-                <button type="button" class="pass-toggle" onclick="togglePass('siPass',this)" tabindex="-1">
-                  <svg id="siPassEye" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                </button>
-              </div>
-            </div>
-            <p class="auth-err" id="siErr"></p>
-            <button type="submit" class="btn-auth">Sign in</button>
-          </form>
+          </div>
+          <p class="auth-err" id="siErr"></p>
+          <button type="submit" class="btn-auth">Sign in</button>
+        </form>
 
-          <p class="auth-switch">Don't have an account? <a href="#" onclick="switchForm('register');return false">Create account</a></p>
-        </div>
-
-        <!-- CREATE ACCOUNT FORM -->
-        <div id="formRegister" class="auth-card" style="display:none">
-          <h2 class="auth-title">Create account</h2>
-          <p class="auth-subtitle">Set up your Tracker profile</p>
-
-          <form id="registerForm" class="auth-form" autocomplete="on">
-
-            <!-- Profile picture (optional) -->
-            <div class="field">
-              <label class="field-label">Profile picture <span class="opt-lbl">(optional)</span></label>
-              <div class="avatar-picker">
-                <div class="avatar-preview" id="avatarPreview">
-                  <span id="avatarInitial">?</span>
-                  <img id="avatarImg" src="" alt="" style="display:none">
-                </div>
-                <div class="avatar-picker-actions">
-                  <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('avatarFileInput').click()">Upload photo</button>
-                  <button type="button" class="btn btn-ghost btn-sm" id="avatarRemoveBtn" onclick="removeAvatar()" style="display:none">Remove</button>
-                  <p class="avatar-hint">JPG or PNG, max 2MB</p>
-                </div>
-              </div>
-              <input id="avatarFileInput" type="file" accept="image/jpeg,image/png" style="display:none" onchange="handleAvatarUpload(event)">
-            </div>
-
-            <div class="field-row">
-              <div class="field">
-                <label class="field-label" for="regFirstName">First name</label>
-                <input id="regFirstName" class="field-inp" type="text" placeholder="First" autocomplete="given-name">
-              </div>
-              <div class="field">
-                <label class="field-label" for="regLastName">Last name</label>
-                <input id="regLastName" class="field-inp" type="text" placeholder="Last" autocomplete="family-name">
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="field-label" for="regEmail">Email address</label>
-              <input id="regEmail" class="field-inp" type="email" placeholder="you@example.com" autocomplete="email" spellcheck="false">
-            </div>
-
-            <div class="field">
-              <label class="field-label" for="regPass">Password</label>
-              <div class="pass-wrap">
-                <input id="regPass" class="field-inp" type="password" placeholder="Min. 6 characters" autocomplete="new-password">
-                <button type="button" class="pass-toggle" onclick="togglePass('regPass',this)" tabindex="-1">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                </button>
-              </div>
-            </div>
-
-            <p class="auth-err" id="regErr"></p>
-            <button type="submit" class="btn-auth">Create account</button>
-          </form>
-
-          <p class="auth-switch">Already have an account? <a href="#" onclick="switchForm('signin');return false">Sign in</a></p>
-        </div>
-
+        <p class="auth-switch">Don't have an account? <a href="#" onclick="switchForm('register');return false">Create account</a></p>
       </div>
-    </div>
 
+      <!-- CREATE ACCOUNT FORM -->
+      <div id="formRegister" class="auth-content" style="display:none">
+        <h1 class="auth-title">Create account</h1>
+        <p class="auth-subtitle">Set up your Tracker profile</p>
+
+        <form id="registerForm" class="auth-form" autocomplete="on">
+
+          <!-- Profile picture (optional) -->
+          <div class="field">
+            <label class="field-label">Profile picture <span class="opt-lbl">(optional)</span></label>
+            <div class="avatar-picker">
+              <div class="avatar-preview" id="avatarPreview">
+                <span id="avatarInitial">?</span>
+                <img id="avatarImg" src="" alt="" style="display:none">
+              </div>
+              <div class="avatar-picker-actions">
+                <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('avatarFileInput').click()">Upload photo</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="avatarRemoveBtn" onclick="removeAvatar()" style="display:none">Remove</button>
+                <p class="avatar-hint">JPG or PNG, max 2MB</p>
+              </div>
+            </div>
+            <input id="avatarFileInput" type="file" accept="image/jpeg,image/png" style="display:none" onchange="handleAvatarUpload(event)">
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="regFirstName">First name</label>
+              <input id="regFirstName" class="field-inp" type="text" placeholder="First" autocomplete="given-name">
+            </div>
+            <div class="field">
+              <label class="field-label" for="regLastName">Last name</label>
+              <input id="regLastName" class="field-inp" type="text" placeholder="Last" autocomplete="family-name">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="regEmail">Email address</label>
+            <input id="regEmail" class="field-inp" type="email" placeholder="you@example.com" autocomplete="email" spellcheck="false">
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="regPass">Password</label>
+            <div class="pass-wrap">
+              <input id="regPass" class="field-inp" type="password" placeholder="Min. 6 characters" autocomplete="new-password">
+              <button type="button" class="pass-toggle" onclick="togglePass('regPass',this)" tabindex="-1">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <p class="auth-err" id="regErr"></p>
+          <button type="submit" class="btn-auth">Create account</button>
+        </form>
+
+        <p class="auth-switch">Already have an account? <a href="#" onclick="switchForm('signin');return false">Sign in</a></p>
+      </div>
+
+    </div>
   </div>
 </div>
 
