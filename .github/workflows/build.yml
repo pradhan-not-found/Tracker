@@ -1,0 +1,62 @@
+name: Build macOS Application & DMG
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos:
+    name: Build Tracker App & DMG
+    runs-on: macos-14
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+          swift --version
+
+      - name: Grant execution permission to build script
+        run: chmod +x build_dmg.sh
+
+      - name: Build Tracker.app and Tracker.dmg
+        run: ./build_dmg.sh
+
+      - name: Verify build artifacts
+        run: |
+          ls -lh Tracker.dmg
+          ls -la Tracker.app
+
+      - name: Upload Tracker DMG Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tracker-macOS-DMG
+          path: Tracker.dmg
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload Tracker App Bundle Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tracker-App-Bundle
+          path: Tracker.app
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Tracker.dmg
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

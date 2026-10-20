@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     LOGIN / REGISTER SCREEN
+════════════════════════════════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="auth-layout">
+
+    <!-- Left branding panel -->
+    <div class="auth-brand">
+      <div class="auth-brand-inner">
+        <div class="auth-brand-logo">
+          <img src="assets/logo.png" alt="Tracker" class="auth-brand-img" onerror="this.style.display='none';document.getElementById('authBrandFallback').style.display='flex'">
+          <div id="authBrandFallback" class="auth-brand-fallback">T</div>
+        </div>
+        <h1 class="auth-brand-name">Tracker</h1>
+        <p class="auth-brand-tagline">Professional data management<br>for schools and institutions.</p>
+        <div class="auth-brand-features">
+          <div class="auth-feat">
+            <div class="auth-feat-dot"></div>
+            <span>Create unlimited workspaces</span>
+          </div>
+          <div class="auth-feat">
+            <div class="auth-feat-dot"></div>
+            <span>Excel-like data sheets</span>
+          </div>
+          <div class="auth-feat">
+            <div class="auth-feat-dot"></div>
+            <span>Import &amp; Export CSV</span>
+          </div>
+          <div class="auth-feat">
+            <div class="auth-feat-dot"></div>
+            <span>All data stored locally</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form panel -->
+    <div class="auth-form-panel">
+      <div class="auth-form-wrap">
+
+        <!-- SIGN IN FORM -->
+        <div id="formSignIn" class="auth-card">
+          <h2 class="auth-title">Welcome back</h2>
+          <p class="auth-subtitle">Sign in to your Tracker account</p>
+
+          <form id="signInForm" class="auth-form" autocomplete="on">
+            <div class="field">
+              <label class="field-label" for="siEmail">Email address</label>
+              <input id="siEmail" class="field-inp" type="email" placeholder="you@example.com" autocomplete="email" spellcheck="false">
+            </div>
+            <div class="field">
+              <label class="field-label" for="siPass">Password</label>
+              <div class="pass-wrap">
+                <input id="siPass" class="field-inp" type="password" placeholder="Enter your password" autocomplete="current-password">
+                <button type="button" class="pass-toggle" onclick="togglePass('siPass',this)" tabindex="-1">
+                  <svg id="siPassEye" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+            <p class="auth-err" id="siErr"></p>
+            <button type="submit" class="btn-auth">Sign in</button>
+          </form>
+
+          <p class="auth-switch">Don't have an account? <a href="#" onclick="switchForm('register');return false">Create account</a></p>
+        </div>
+
+        <!-- CREATE ACCOUNT FORM -->
+        <div id="formRegister" class="auth-card" style="display:none">
+          <h2 class="auth-title">Create account</h2>
+          <p class="auth-subtitle">Set up your Tracker profile</p>
+
+          <form id="registerForm" class="auth-form" autocomplete="on">
+
+            <!-- Profile picture (optional) -->
+            <div class="field">
+              <label class="field-label">Profile picture <span class="opt-lbl">(optional)</span></label>
+              <div class="avatar-picker">
+                <div class="avatar-preview" id="avatarPreview">
+                  <span id="avatarInitial">?</span>
+                  <img id="avatarImg" src="" alt="" style="display:none">
+                </div>
+                <div class="avatar-picker-actions">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('avatarFileInput').click()">Upload photo</button>
+                  <button type="button" class="btn btn-ghost btn-sm" id="avatarRemoveBtn" onclick="removeAvatar()" style="display:none">Remove</button>
+                  <p class="avatar-hint">JPG or PNG, max 2MB</p>
+                </div>
+              </div>
+              <input id="avatarFileInput" type="file" accept="image/jpeg,image/png" style="display:none" onchange="handleAvatarUpload(event)">
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label" for="regFirstName">First name</label>
+                <input id="regFirstName" class="field-inp" type="text" placeholder="First" autocomplete="given-name">
+              </div>
+              <div class="field">
+                <label class="field-label" for="regLastName">Last name</label>
+                <input id="regLastName" class="field-inp" type="text" placeholder="Last" autocomplete="family-name">
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="regEmail">Email address</label>
+              <input id="regEmail" class="field-inp" type="email" placeholder="you@example.com" autocomplete="email" spellcheck="false">
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="regPass">Password</label>
+              <div class="pass-wrap">
+                <input id="regPass" class="field-inp" type="password" placeholder="Min. 6 characters" autocomplete="new-password">
+                <button type="button" class="pass-toggle" onclick="togglePass('regPass',this)" tabindex="-1">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <p class="auth-err" id="regErr"></p>
+            <button type="submit" class="btn-auth">Create account</button>
+          </form>
+
+          <p class="auth-switch">Already have an account? <a href="#" onclick="switchForm('signin');return false">Sign in</a></p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     MAIN APP
+════════════════════════════════════════ -->
+<div id="screen-app" class="screen app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="sidebar-head">
+      <div class="sb-brand">
+        <img src="assets/logo.png" alt="" class="sb-logo" onerror="this.style.display='none'">
+        <span class="sb-title">Tracker</span>
+      </div>
+    </div>
+
+    <div class="sidebar-body">
+      <div class="sb-section-lbl">Workspaces</div>
+      <div id="sbWorkspaceList" class="sb-list"></div>
+      <button class="sb-new-btn" onclick="App.newWorkspace()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Workspace
+      </button>
+
+      <div id="sbSheetsSection" style="display:none">
+        <div class="sb-section-lbl" style="margin-top:18px">Sheets</div>
+        <div id="sbSheetList" class="sb-list"></div>
+        <button class="sb-new-btn" onclick="App.newSheet()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Sheet
+        </button>
+      </div>
+    </div>
+
+    <!-- User profile at bottom -->
+    <div class="sidebar-foot">
+      <div class="sb-user-card">
+        <div class="sb-user-avatar" id="sbUserAvatar">
+          <img id="sbUserAvatarImg" src="" alt="" style="display:none">
+          <span id="sbUserAvatarInitial">A</span>
+        </div>
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="sbUserName">Admin</div>
+          <div class="sb-user-email" id="sbUserEmail">admin@example.com</div>
+        </div>
+        <div class="sb-user-actions">
+          <button class="sb-icon-btn" onclick="showProfileModal()" title="Edit profile">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </button>
+          <button class="sb-icon-btn sb-logout-btn" onclick="Auth.logout()" title="Sign out">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN PANEL -->
+  <div class="main-panel">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <nav class="breadcrumb" id="breadcrumb">
+          <span class="bc-idle">Select a workspace</span>
+        </nav>
+      </div>
+      <div class="topbar-right" id="topbarRight" style="display:none">
+        <button class="btn btn-outline" onclick="App.importCsv()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Import CSV
+        </button>
+        <button class="btn btn-outline" onclick="App.exportCsv()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Export CSV
+        </button>
+        <button class="btn btn-outline" onclick="App.manageColumns()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          Columns
+        </button>
+        <button class="btn btn-primary" onclick="App.addRow()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Row
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <div class="content-area">
+
+      <div id="stateNoWorkspace" class="empty-state">
+        <div class="empty-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+            <ellipse cx="12" cy="5" rx="9" ry="3"/>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+          </svg>
+        </div>
+        <h2 class="empty-title">No workspace selected</h2>
+        <p class="empty-desc">Create a workspace to start organising your data.</p>
+        <button class="btn btn-primary" onclick="App.newWorkspace()">New Workspace</button>
+      </div>
+
+      <div id="stateNoSheet" class="empty-state" style="display:none">
+        <div class="empty-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+            <line x1="3" y1="15" x2="21" y2="15"/>
+            <line x1="9" y1="3" x2="9" y2="21"/>
+          </svg>
+        </div>
+        <h2 class="empty-title">No sheet selected</h2>
+        <p class="empty-desc">Create a sheet in this workspace to start adding data.</p>
+        <button class="btn btn-primary" onclick="App.newSheet()">New Sheet</button>
+      </div>
+
+      <div id="stateGrid" class="grid-view" style="display:none">
+        <div class="grid-toolbar">
+          <div class="grid-meta" id="gridMeta"></div>
+          <input id="gridSearch" class="grid-search" type="text" placeholder="Search rows…" oninput="App.search(this.value)">
+        </div>
+        <div class="grid-scroll" id="gridScroll">
+          <table class="grid-table" id="gridTable">
+            <thead id="gridHead"></thead>
+            <tbody id="gridBody"></tbody>
+          </table>
+        </div>
+        <div class="grid-foot">
+          <span class="grid-status" id="gridStatus">Ready</span>
+          <div class="grid-pages">
+            <button class="page-btn" id="btnPrev" onclick="App.prevPage()">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="page-label" id="pageLabel">Page 1 of 1</span>
+            <button class="page-btn" id="btnNext" onclick="App.nextPage()">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     MODALS
+════════════════════════════════════════ -->
+
+<!-- New Workspace -->
+<div id="modalWorkspace" class="overlay" onclick="Modal.bg(event,'modalWorkspace')">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3>New Workspace</h3>
+      <button class="modal-x" onclick="Modal.close('modalWorkspace')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-bd">
+      <div class="field"><label class="field-label">Name</label><input id="wsName" class="field-inp" type="text" placeholder="e.g. Attendance 2024, Students"></div>
+      <div class="field"><label class="field-label">Description <span class="opt-lbl">(optional)</span></label><input id="wsDesc" class="field-inp" type="text" placeholder="Brief description"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="Modal.close('modalWorkspace')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.createWorkspace()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Sheet -->
+<div id="modalSheet" class="overlay" onclick="Modal.bg(event,'modalSheet')">
+  <div class="modal modal-wide">
+    <div class="modal-hd">
+      <h3>New Sheet</h3>
+      <button class="modal-x" onclick="Modal.close('modalSheet')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-bd">
+      <div class="field"><label class="field-label">Sheet Name</label><input id="sheetName" class="field-inp" type="text" placeholder="e.g. Class 10-A, March Attendance"></div>
+      <div class="col-builder">
+        <div class="col-builder-hd">
+          <span class="field-label">Columns</span>
+          <button class="btn btn-ghost btn-sm" onclick="ColBuilder.add('sheetColList')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Column
+          </button>
+        </div>
+        <div class="col-list" id="sheetColList">
+          <div class="col-row col-sys">
+            <input class="field-inp col-name-inp" type="text" value="id" disabled>
+            <select class="field-sel" disabled><option>INTEGER</option></select>
+            <span class="col-pk-badge">PK</span>
+            <span style="width:22px"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="Modal.close('modalSheet')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.createSheet()">Create Sheet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Manage Columns -->
+<div id="modalCols" class="overlay" onclick="Modal.bg(event,'modalCols')">
+  <div class="modal modal-wide">
+    <div class="modal-hd">
+      <h3>Manage Columns</h3>
+      <button class="modal-x" onclick="Modal.close('modalCols')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-bd">
+      <p class="modal-info">Existing columns are shown below. Add new columns — all existing data is preserved.</p>
+      <div class="col-builder">
+        <div class="col-builder-hd">
+          <span class="field-label">Columns</span>
+          <button class="btn btn-ghost btn-sm" onclick="ColBuilder.add('manageColList')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Column
+          </button>
+        </div>
+        <div class="col-list" id="manageColList"></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="Modal.close('modalCols')">Cancel</button>
+      <button class="btn btn-primary" onclick="App.applyColumns()">Apply Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Row Confirm -->
+<div id="modalDelRow" class="overlay" onclick="Modal.bg(event,'modalDelRow')">
+  <div class="modal modal-sm">
+    <div class="modal-hd">
+      <h3>Delete Row</h3>
+      <button class="modal-x" onclick="Modal.close('modalDelRow')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-bd"><p class="modal-info">This row will be permanently deleted and cannot be recovered.</p></div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="Modal.close('modalDelRow')">Cancel</button>
+      <button class="btn btn-danger" onclick="App.confirmDeleteRow()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Profile -->
+<div id="modalProfile" class="overlay" onclick="Modal.bg(event,'modalProfile')">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3>Edit Profile</h3>
+      <button class="modal-x" onclick="Modal.close('modalProfile')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-bd">
+      <div class="field">
+        <label class="field-label">Profile picture <span class="opt-lbl">(optional)</span></label>
+        <div class="avatar-picker">
+          <div class="avatar-preview" id="editAvatarPreview">
+            <img id="editAvatarImg" src="" alt="" style="display:none">
+            <span id="editAvatarInitial">A</span>
+          </div>
+          <div class="avatar-picker-actions">
+            <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('editAvatarInput').click()">Change photo</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="editAvatarRemoveBtn" onclick="removeEditAvatar()">Remove</button>
+            <p class="avatar-hint">JPG or PNG, max 2MB</p>
+          </div>
+        </div>
+        <input id="editAvatarInput" type="file" accept="image/jpeg,image/png" style="display:none" onchange="handleEditAvatarUpload(event)">
+      </div>
+      <div class="field-row">
+        <div class="field"><label class="field-label">First name</label><input id="editFirstName" class="field-inp" type="text"></div>
+        <div class="field"><label class="field-label">Last name</label><input id="editLastName" class="field-inp" type="text"></div>
+      </div>
+      <div class="field"><label class="field-label">Email address</label><input id="editEmail" class="field-inp" type="email" disabled></div>
+      <div class="field"><label class="field-label">New password <span class="opt-lbl">(leave blank to keep current)</span></label>
+        <input id="editPass" class="field-inp" type="password" placeholder="New password"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="Modal.close('modalProfile')">Cancel</button>
+      <button class="btn btn-primary" onclick="Auth.saveProfile()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toasts -->
+<div id="toastRoot" class="toast-root"></div>
+<input id="csvInput" type="file" accept=".csv" style="display:none" onchange="App.onCsvFile(event)">
+
+<script src="app.js"></script>
+</body>
+</html>
