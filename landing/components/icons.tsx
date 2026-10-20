@@ -238,9 +238,7 @@ export const CalendarDayIcon = (props: P) => (
 
 export const DashboardIcon = (props: P) => (
   <svg {...stroke(props)}>
-    <rect x="3.5" y="4" width="7" height="6" rx="1.5" />
-    <path d="M14 7h6.5M14 10h4" />
-    <path d="M4 20h16.5M7 20v-4.5M12 20v-7M17 20v-5" />
+    <path d="M4 20h16M7 20V11M12 20V4M17 20V14" />
   </svg>
 )
 
@@ -290,5 +288,13 @@ export const HelpCircleIcon = (props: P) => (
 export const ArrowUpIcon = (props: P) => (
   <svg {...stroke({ width: 16, height: 16, ...props })}>
     <path d="M12 19V5M5 12l7-7 7 7" />
+  </svg>
+)
+
+export const TemplateIcon = (props: P) => (
+  <svg {...stroke({ width: 16, height: 16, ...props })}>
+    <rect width="18" height="7" x="3" y="3" rx="1.5" />
+    <rect width="9" height="7" x="3" y="14" rx="1.5" />
+    <rect width="5" height="7" x="16" y="14" rx="1.5" />
   </svg>
 )

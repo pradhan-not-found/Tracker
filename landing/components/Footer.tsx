@@ -12,7 +12,7 @@ import {
   GitHubIcon,
   TagIcon,
   LayersIcon,
-  ColumnsIcon,
+  TemplateIcon,
   HelpCircleIcon,
   ArrowUpIcon,
 } from './icons'
@@ -49,7 +49,7 @@ const columns: { title: string; links: FooterLink[] }[] = [
     title: 'Guide',
     links: [
       { label: 'Features', href: '#features', page: true, icon: LayersIcon },
-      { label: 'Templates', href: '#templates', page: true, icon: ColumnsIcon },
+      { label: 'Templates', href: '#templates', page: true, icon: TemplateIcon },
       { label: 'FAQ', href: '#faq', page: true, icon: HelpCircleIcon },
       { label: 'Back to top', href: '#top', icon: ArrowUpIcon },
     ],
