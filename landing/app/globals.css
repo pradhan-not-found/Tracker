@@ -879,13 +879,10 @@ button {
   line-height: 1.5;
   max-width: 32ch;
 }
-.footer-col-title,
-.footer-bottom {
+.footer-col-title {
   font-size: 10.5px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-}
-.footer-col-title {
   margin-bottom: 14px;
   color: var(--ink-muted);
 }
@@ -912,6 +909,8 @@ button {
   margin-top: clamp(32px, 4vw, 56px);
   padding-top: 18px;
   border-top: 1px solid var(--rule-soft);
+  font-size: 13.5px;
+  color: var(--ink-muted);
 }
 
 /* --------------------------------------------------------------------------
