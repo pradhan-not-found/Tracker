@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { buildList, builds, isBuildId, LATEST_RELEASE_URL, VERSION, type Build } from '@/lib/downloads'
 import { detectMacArch, detectOS } from '@/lib/use-platform'
-import { startDownload } from '@/lib/start-download'
+import { arrivedViaHistory, isPlainLeftClick, startDownload } from '@/lib/start-download'
 import { Display, Meta } from '../Spread'
 import { DownloadIcon } from '../icons'
 import { DownloadLink } from './DownloadProvider'
@@ -14,6 +14,8 @@ type Phase =
   | { kind: 'detecting' }
   | { kind: 'starting'; build: Build }
   | { kind: 'started'; build: Build }
+  /** came back with Back/Forward: offer the build instead of downloading it again */
+  | { kind: 'ready'; build: Build }
   | { kind: 'choose' }
 
 const START_DELAY = 800
@@ -32,6 +34,7 @@ const headline: Record<Phase['kind'], string[]> = {
   detecting: ['Getting your', 'download ready.'],
   starting: ['Getting your', 'download ready.'],
   started: ['Your download', 'has started.'],
+  ready: ['Your download', 'is ready.'],
   choose: ['Choose your', 'download.'],
 }
 
@@ -48,6 +51,10 @@ export function AutoDownload() {
         setPhase({ kind: 'choose' })
         return
       }
+      if (arrivedViaHistory()) {
+        setPhase({ kind: 'ready', build })
+        return
+      }
       setPhase({ kind: 'starting', build })
       timer = window.setTimeout(() => {
         if (fired.current) return // never start twice (StrictMode remounts effects in dev)
@@ -62,7 +69,7 @@ export function AutoDownload() {
     }
   }, [])
 
-  const active = phase.kind === 'starting' || phase.kind === 'started' ? phase.build : null
+  const active = phase.kind === 'starting' || phase.kind === 'started' || phase.kind === 'ready' ? phase.build : null
 
   return (
     <>
@@ -79,7 +86,9 @@ export function AutoDownload() {
                 ? 'Tracker is a desktop app for Windows and macOS. Pick a build below, or open this page on your computer and the right one starts by itself.'
                 : phase.kind === 'started'
                   ? 'The file is saving to your Downloads folder. Keep this page open for the setup steps.'
-                  : 'Detecting your system and picking the right build.'}
+                  : phase.kind === 'ready'
+                    ? 'Welcome back. Start the download again when you are ready, or pick another build below.'
+                    : 'Detecting your system and picking the right build.'}
             </p>
             <p className="dl-back">
               <Link className="text-link" href="/">
@@ -92,16 +101,32 @@ export function AutoDownload() {
             {active ? (
               <div className="glass dl-card">
                 <p className="dl-kicker">
-                  {phase.kind === 'starting' ? 'Starting download' : 'Downloading'}
+                  {phase.kind === 'starting' ? 'Starting download' : phase.kind === 'ready' ? 'Ready to download' : 'Downloading'}
                 </p>
                 <DownloadDetails build={active} />
                 <div className="dl-foot">
-                  <span>
-                    Download didn’t start?{' '}
-                    <a className="text-link" href={active.url}>
-                      Try again
+                  {phase.kind === 'ready' ? (
+                    <a
+                      className="btn btn-solid"
+                      href={active.url}
+                      onClick={(e) => {
+                        if (!isPlainLeftClick(e)) return
+                        e.preventDefault()
+                        startDownload(active.url)
+                        setPhase({ kind: 'started', build: active })
+                      }}
+                    >
+                      <DownloadIcon />
+                      Download again
                     </a>
-                  </span>
+                  ) : (
+                    <span>
+                      Download didn’t start?{' '}
+                      <a className="text-link" href={active.url}>
+                        Try again
+                      </a>
+                    </span>
+                  )}
                   <a className="text-link" href="#all-builds">
                     Other platforms
                   </a>

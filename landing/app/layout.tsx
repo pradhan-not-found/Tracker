@@ -66,11 +66,12 @@ export const viewport: Viewport = {
   colorScheme: 'light',
   width: 'device-width',
   initialScale: 1,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={switzer.variable} suppressHydrationWarning>
+    <html lang="en" className={switzer.variable} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         {/* Enables reveal animations only when JS runs, so content is never hidden without it. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />

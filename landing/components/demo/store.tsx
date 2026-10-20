@@ -130,17 +130,40 @@ function reducer(state: State, a: Action): State {
   }
 }
 
+const DAY_RE = /^\d{4}-\d{2}-\d{2}$/
+
+/** Accepts only well-formed rows, so a corrupted or hand-edited save can never crash the views. */
+function sanitize(raw: unknown): State | null {
+  if (!raw || typeof raw !== 'object') return null
+  const s = raw as Partial<State>
+  if (!Array.isArray(s.rows)) return null
+  const seen = new Set<string>()
+  const rows: Row[] = []
+  for (const r of s.rows as unknown[]) {
+    if (!r || typeof r !== 'object') continue
+    const { id, task, status, priority, due } = r as Partial<Row>
+    if (typeof id !== 'string' || seen.has(id) || typeof task !== 'string' || !task.trim()) continue
+    if (!STATUS_ORDER.includes(status as Status) || !PRIORITY_ORDER.includes(priority as Priority)) continue
+    if (typeof due !== 'string' || !DAY_RE.test(due) || Number.isNaN(parseDay(due).getTime())) continue
+    seen.add(id)
+    rows.push({ id, task: task.slice(0, 80), status: status as Status, priority: priority as Priority, due })
+  }
+  // next id must be above every existing one, or new rows would collide (duplicate React keys)
+  const maxId = rows.reduce((m, r) => Math.max(m, Number(r.id.replace(/^r/, '')) || 0), 0)
+  const seq = Math.max(typeof s.seq === 'number' && Number.isFinite(s.seq) ? Math.floor(s.seq) : 0, maxId + 1)
+  const log = Array.isArray(s.log) ? s.log.filter((l): l is string => typeof l === 'string').slice(0, 6) : []
+  return { rows, log, seq }
+}
+
 function load(today: Date): State {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (raw) {
-      const s = JSON.parse(raw) as State
-      if (Array.isArray(s.rows) && typeof s.seq === 'number') {
-        return { rows: s.rows.map(({ leaving, fresh, ...r }) => r), log: Array.isArray(s.log) ? s.log : [], seq: s.seq }
-      }
+      const s = sanitize(JSON.parse(raw))
+      if (s) return s
     }
   } catch {
-    /* storage unavailable, fall back to in-memory */
+    /* storage unavailable or corrupted: fall back to the seed data */
   }
   return seed(today)
 }

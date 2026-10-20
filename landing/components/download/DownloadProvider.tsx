@@ -91,7 +91,10 @@ function DownloadDialog({
     const d = ref.current
     if (!d) return
     // Native modal dialog: the rest of the page becomes inert, so focus stays inside; Esc fires "cancel".
-    if (!d.open) d.showModal()
+    if (!d.open) {
+      if (typeof d.showModal === 'function') d.showModal()
+      else d.setAttribute('open', '') // very old browsers: still visible, closes via the buttons
+    }
     const onCloseEvt = () => onClose(restore.current)
     d.addEventListener('close', onCloseEvt)
     return () => d.removeEventListener('close', onCloseEvt)
@@ -99,7 +102,9 @@ function DownloadDialog({
 
   const dismiss = (restoreFocus = true) => {
     restore.current = restoreFocus
-    ref.current?.close()
+    const d = ref.current
+    if (d && typeof d.close === 'function') d.close()
+    else onClose(restoreFocus)
   }
 
   return (
@@ -139,7 +144,19 @@ function DownloadDialog({
               Try again
             </a>
           </span>
-          <a className="text-link" href={otherHref} onClick={() => dismiss(false)}>
+          <a
+            className="text-link"
+            href={otherHref}
+            onClick={() => {
+              dismiss(false)
+              // move keyboard focus to the section the link scrolls to
+              const target = document.querySelector<HTMLElement>(otherHref)
+              if (target) {
+                if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1')
+                requestAnimationFrame(() => target.focus({ preventScroll: true }))
+              }
+            }}
+          >
             Other platforms
           </a>
         </div>

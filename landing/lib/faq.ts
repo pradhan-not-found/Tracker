@@ -13,6 +13,10 @@ export const faqs: FaqItem[] = [
     a: 'Directly on your desktop. Tracker is entirely local-first, so all your data remains securely on your computer in your complete control. Nothing is ever uploaded to external servers or the cloud.',
   },
   {
+    q: 'How do updates work?',
+    a: 'Tracker tells you when a new version is available and asks before installing anything. Updates replace the app only: your workspaces, sheets and files are never touched.',
+  },
+  {
     q: 'macOS says the app can’t be opened. What do I do?',
     a: 'The macOS builds are not yet signed with an Apple Developer ID. On first launch, right-click (or Control-click) Tracker in Applications and choose Open, then confirm. After that it opens normally.',
   },

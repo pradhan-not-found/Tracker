@@ -20,3 +20,21 @@ export function startDownload(url: string) {
 export function isPlainLeftClick(e: { button: number; metaKey: boolean; ctrlKey: boolean; shiftKey: boolean; altKey: boolean }) {
   return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey
 }
+
+// Remember history (Back/Forward) navigations, so pages that auto-start a download don't
+// start it again when the visitor simply comes back. This module is loaded on every page
+// that has download links, so the listener is in place before such a navigation happens.
+let lastHistoryNav = -Infinity
+if (typeof window !== 'undefined') {
+  window.addEventListener('popstate', () => {
+    lastHistoryNav = performance.now()
+  })
+}
+
+/** True when the current page was reached with Back/Forward (client-side or a full reload of history). */
+export function arrivedViaHistory() {
+  if (performance.now() - lastHistoryNav < 2000) return true
+  const entry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+  // The navigation entry describes the document's first load only; trust it only while still on that URL.
+  return entry?.type === 'back_forward' && entry.name === window.location.href
+}

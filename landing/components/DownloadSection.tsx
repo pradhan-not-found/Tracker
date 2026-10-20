@@ -66,6 +66,10 @@ export function DownloadSection() {
               </p>
             </li>
           </ul>
+          <p className="update-note">
+            <strong>Staying up to date:</strong> Tracker tells you when an update is available and asks before
+            installing it. Updates never touch your data.
+          </p>
           <p className="fallback">
             Download not starting? Every build is on the{' '}
             <a href={LATEST_RELEASE_URL} target="_blank" rel="noopener noreferrer">

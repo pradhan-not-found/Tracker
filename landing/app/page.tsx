@@ -19,7 +19,7 @@ export default function Home() {
       <Nav />
       <div className="page">
         <PageArcs />
-        <main id="main">
+        <main id="main" tabIndex={-1}>
           <Hero />
           <DemoProvider>
             <Features />

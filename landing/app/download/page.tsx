@@ -31,7 +31,7 @@ export default function DownloadPage() {
       <Nav home={false} />
       <div className="page">
         <PageArcs />
-        <main id="main">
+        <main id="main" tabIndex={-1}>
           <AutoDownload />
         </main>
         <Footer home={false} />
