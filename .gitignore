@@ -13,3 +13,12 @@ build/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Electron / Node
+node_modules/
+dist/
+*.blockmap
+npm-debug.log*
+
+# Local reference checkout (not part of Tracker)
+.Atlas/

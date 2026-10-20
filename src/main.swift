@@ -39,37 +39,9 @@ class NativeBridge: NSObject, WKScriptMessageHandler {
 
     // MARK: - SQLite Setup
     private func initDatabase() {
+        // The web UI creates and migrates its own schema; nothing is seeded here.
         if sqlite3_open(dbPath, &db) == SQLITE_OK {
             print("SQLite Database successfully opened at: \(dbPath)")
-            let createAttendanceTable = """
-            CREATE TABLE IF NOT EXISTS attendance (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                sheet_id TEXT DEFAULT 'main',
-                member_id TEXT,
-                name TEXT,
-                department TEXT,
-                date TEXT,
-                status TEXT,
-                time_in TEXT,
-                time_out TEXT,
-                hours REAL,
-                verification_method TEXT,
-                notes TEXT,
-                custom_fields TEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            );
-            """
-
-            let createSettingsTable = """
-            CREATE TABLE IF NOT EXISTS settings (
-                key TEXT PRIMARY KEY,
-                value TEXT
-            );
-            """
-
-            var errMsg: UnsafeMutablePointer<CChar>?
-            sqlite3_exec(db, createAttendanceTable, nil, nil, &errMsg)
-            sqlite3_exec(db, createSettingsTable, nil, nil, &errMsg)
         } else {
             print("Unable to open SQLite database.")
         }
@@ -252,7 +224,7 @@ class NativeBridge: NSObject, WKScriptMessageHandler {
                         let text = textCol(statement, i)
                         row.append(text)
                     case SQLITE_NULL:
-                        row.append("NULL")
+                        row.append(NSNull())
                     default:
                         row.append("")
                     }

@@ -1,0 +1,127 @@
+{
+  "name": "tracker",
+  "productName": "Tracker",
+  "version": "2.1.0",
+  "description": "Tracker — a local-first attendance and records workspace",
+  "main": "electron/main.js",
+  "author": "pradhan-not-found",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build:win": "electron-builder --win --x64",
+    "build:mac": "electron-builder --mac --arm64 --x64",
+    "build:linux": "electron-builder --linux",
+    "build:dir": "electron-builder --dir"
+  },
+  "dependencies": {
+    "sql.js": "1.14.2"
+  },
+  "devDependencies": {
+    "electron": "43.7.7",
+    "electron-builder": "26.15.7"
+  },
+  "build": {
+    "appId": "com.tracker.attendance",
+    "productName": "Tracker",
+    "copyright": "Copyright © 2026 Tracker",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "electron/**/*",
+      "ui/**/*",
+      "assets/icon.png",
+      "assets/icon.ico",
+      "assets/icon-mac.png",
+      "node_modules/sql.js/dist/sql-wasm.js",
+      "node_modules/sql.js/dist/sql-wasm.wasm",
+      "node_modules/sql.js/package.json",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/sql.js/dist/sql-wasm.wasm"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "executableName": "Tracker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "Tracker",
+      "uninstallDisplayName": "Tracker",
+      "artifactName": "Tracker-${version}-windows-x64-setup.${ext}",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "runAfterFinish": true
+    },
+    "portable": {
+      "artifactName": "Tracker-${version}-windows-x64-portable.${ext}"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "assets/AppIcon.icns",
+      "category": "public.app-category.productivity",
+      "identity": "-",
+      "hardenedRuntime": false,
+      "darkModeSupport": true,
+      "minimumSystemVersion": "12.0",
+      "artifactName": "Tracker-${version}-macos-${arch}.${ext}"
+    },
+    "dmg": {
+      "title": "Tracker ${version}",
+      "iconSize": 96,
+      "window": {
+        "width": 540,
+        "height": 380
+      },
+      "contents": [
+        {
+          "x": 140,
+          "y": 190,
+          "type": "file"
+        },
+        {
+          "x": 400,
+          "y": 190,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "icon": "assets/AppIcon.icns"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "assets/icon.png",
+      "category": "Office",
+      "maintainer": "Tracker"
+    }
+  }
+}

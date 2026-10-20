@@ -1,97 +1,100 @@
-# Tracker — Attendance & Activity Intelligence
+# Tracker
 
-[![Build macOS Application & DMG](https://github.com/pradhan-not-found/Tracker/actions/workflows/build.yml/badge.svg)](https://github.com/pradhan-not-found/Tracker/actions/workflows/build.yml)
+A local-first desktop app for building your own databases — to-do lists, marks and grades, attendance, inventory, or anything you can describe in columns. Runs on **Windows** and **macOS**. Everything is stored in a SQLite database on your computer; there is no cloud account and no sample data.
 
-**Tracker** is a high-performance, professional macOS desktop application built natively in Swift with Apple Vision OCR, local SQLite persistence, an Excel-like spreadsheet interface, and full export capabilities (PDF, Excel, Word, CSV).
+## Features
 
-Strictly designed with **Google Sans** typography and an ultra-clean **Enterprise White** layout. **Zero emojis. Zero AI slop. 100% offline, local, and private.**
+- **Workspaces and sheets.** Group related sheets in a workspace. Start a sheet from a template (To-do, Marks & grades, Attendance, Inventory), from a blank sheet, or from a CSV/Excel file. The wizard previews the sheet before anything is created.
+- **Typed columns.** Text, Number, Marks (out of a maximum), Date, Checkbox, Status (single choice with colours), File upload, Email, Link. Add, rename, retype or delete columns at any time.
+- **Three views per sheet.**
+  - *Table*: a spreadsheet grid with inline editing, sorting, search and a summary row (sums, averages, % checked).
+  - *Calendar*: a month view of any date column. Click a day to add a record on that date.
+  - *Dashboard*: KPIs, completion rate, due/overdue counts, a 30-day "records added" trend, a breakdown for each status column and a marks distribution.
+- **Everything tracked.** Every record you add, edit or delete — and every column change, import and export — goes into an activity log. Each record's drawer shows its own history.
+- **Reminders.** Sheets with a deadline date (any date column in a To-do sheet, or one named like *Due*, *Deadline*) plus a checkbox or "done" status raise reminders. Overdue and due-today items appear in the bell inbox and on Home, and you get a system notification at sign-in.
+- **Import & export.** Import CSV, XLSX, XLS or ODS; missing columns are created with their types detected. Export a sheet as Excel, CSV or JSON, or a whole workspace as a multi-tab Excel workbook.
+- **Local accounts.** Each account sees its own workspaces. Passwords are stored as salted SHA-256 hashes.
+- **Design.** Atlas design language: Switzer variable font, warm neutral palette, GSAP motion, light/dark/system themes.
 
----
+## Download
 
-## 📦 What's Included
+Get the latest build from [Releases](https://github.com/pradhan-not-found/Tracker/releases/latest):
 
-| File / Folder | Description |
-| :--- | :--- |
-| **`.github/workflows/build.yml`** | **GitHub Actions CI/CD pipeline.** Automatically compiles native Swift binary, bundles app, packages DMG, and attaches artifacts. |
-| **`assets/`** | Official high-resolution macOS icons (`AppIcon.icns`, `app_icon.png`). |
-| **`sample_data/`** | `attendance_sample.csv` and `sample_attendance_roster.jpg` for instant testing. |
-| **`build_dmg.sh`** | Build automation script to re-compile the app and rebuild `Tracker.dmg`. |
-| **`src/`** | Native Swift source code (`main.swift`) with Apple Vision OCR and SQLite bridge. |
-| **`ui/`** | Frontend interface (Helvetica CSS, Excel spreadsheet grid, OCR & CSV engines, Word/Excel exporters). |
+| Platform | File |
+|---|---|
+| Windows 10/11 (installer) | `Tracker-<version>-windows-x64-setup.exe` |
+| Windows (portable, no install) | `Tracker-<version>-windows-x64-portable.exe` |
+| macOS, Apple Silicon | `Tracker-<version>-macos-arm64.dmg` |
+| macOS, Intel | `Tracker-<version>-macos-x64.dmg` |
 
----
+The builds are not code-signed. On Windows, SmartScreen may warn on first run (*More info → Run anyway*). On macOS, right-click Tracker in Applications and choose **Open** the first time.
 
-## 🚀 Quick Start
+## Where your data lives
 
-### Option 1: Install via DMG (Recommended)
-1. Double-click **`Tracker.dmg`** in this folder (or download it).
-2. Drag **Tracker** into your **Applications** folder.
-3. Launch **Tracker** from Applications, Launchpad, or Spotlight.
+| Platform | Location |
+|---|---|
+| Windows | `%APPDATA%\Tracker\tracker.db` |
+| macOS | `~/Library/Application Support/Tracker/tracker.db` |
 
-### Option 2: Run Directly from Terminal
+## Development
+
+Requirements: Node.js 22+.
+
 ```bash
-open Tracker.app
+npm install
+npm start          # run the app
+npm run dev        # run with DevTools
 ```
 
----
+> Running from VS Code's integrated terminal? If Electron starts as plain Node, clear `ELECTRON_RUN_AS_NODE` first.
 
-## ⚡ Key Features
+### Building installers
 
-### 1. Dynamic Headings & Subheadings Privilege
-You have complete freedom to define, edit, and customize headings and subheadings at every level:
-- **Document Titles**: Click directly on the top banner or click **"Customize Headings"** to edit the Organization Name, Main Document Heading, and Subheading in real time.
-- **Custom Spreadsheet Columns**: Click **"+ Add Custom Column"** or the **"+"** button on the table header to add any custom data field (e.g. *Shift*, *Location*, *Badge ID*, *Supervisor*, *Score*, *Remarks*).
-- **Custom Schema Manager**: Configure column data types (Text, Number, Date, Time, Dropdown Select), default values, and choose whether they appear in exports.
-- All custom headings and subheadings automatically flow into the **PDF reports**, **Excel spreadsheets**, and **Word documents**.
-
-### 2. Excel-like Spreadsheet Data Grid
-- **Inline Cell Editing**: Double-click any cell or press `Enter` to edit directly in place.
-- **Quick Status Toggling**: Double-click status chips or cycle between *Present* (Emerald), *Absent* (Rose), *Late* (Amber), *Excused* (Sky), and *Remote* (Purple).
-- **Auto-Calculated Hours**: Automatically calculates total work hours based on Time In and Time Out.
-- **Quick Add Bar**: Type ID, Name, Department, and press `Enter` to log records in seconds.
-- **Sorting & Filtering**: Instant search across all columns, department filter, and status filter tabs.
-- **Bulk Operations**: Select multiple rows to bulk mark Present, Absent, or Delete.
-
-### 3. Apple Vision Hardware-Accelerated Image OCR Scanner
-- Click **"Scan Image OCR"** and upload or drag-and-drop photos/scans of paper attendance sheets, badges, or sign-in logs.
-- Powered by Apple's native **Vision Framework** (`VNRecognizeTextRequest(recognitionLevel: .accurate)`).
-- **100% on-device and private**: Scans text blocks with bounding box visual overlays.
-- Automatically parses names, employee IDs, departments, statuses, and in/out timestamps.
-- Review and edit extracted rows side-by-side with the image before committing to SQLite.
-- Test immediately with `sample_data/sample_attendance_roster.jpg`!
-
-### 4. Smart CSV Import Engine
-- Click **"Upload CSV"** and drop any `.csv` or `.tsv` file.
-- Automatic column matching for names, employee IDs, dates, statuses, times, and custom columns.
-- Live preview of the first 5 rows with interactive mapping overrides.
-- Fast batch transaction insertion directly into SQLite.
-- Test immediately with `sample_data/attendance_sample.csv`!
-
-### 5. Local SQLite Database Engine
-- All records are saved in local SQLite storage:
-  ```
-  ~/Library/Application Support/Tracker/tracker.db
-  ```
-- Built-in **SQL Console** (`⚙️` icon): Inspect schemas, run raw SQL queries (e.g., `SELECT * FROM attendance WHERE status='Present'`), export JSON/SQL backups, or reset data.
-
-### 6. Full Export & Print Suite
-Click **"Export & Print"** to generate high-resolution documents styled with Helvetica typography:
-- **📄 Print / Export to PDF**: Generates a clean corporate report with your custom Org Heading, Main Heading, Subheading, KPI metrics summary, data table, and signature blocks.
-- **📊 Export to Excel (.xlsx)**: Valid OpenXML spreadsheet with headers, data types, and custom columns. Opens natively in Microsoft Excel and Apple Numbers.
-- **📝 Export to Word (.docx)**: Valid Microsoft Word OpenXML document with formatted headings, styled tables, and metadata. Opens natively in Microsoft Word and Pages.
-- **📑 Download Raw CSV**: Universal comma-separated text file for data pipelines.
-
----
-
-## 🛠 Rebuilding from Source
-
-To re-compile the native application and rebuild the DMG installer:
 ```bash
-./build_dmg.sh
+npm run build:win   # dist/Tracker-<v>-windows-x64-setup.exe + portable .exe
+npm run build:mac   # dist/Tracker-<v>-macos-{arm64,x64}.dmg (run on a Mac)
 ```
 
----
+### Releases (CI)
 
-## 📋 System Requirements
-- **Operating System**: macOS 12.0 (Monterey) or later (Apple Silicon M1/M2/M3/M4 or Intel).
-- **Dependencies**: Zero external dependencies required to run `Tracker.app` or `Tracker.dmg`.
+`.github/workflows/build.yml` builds Windows and macOS packages on every push to `main`. To publish a release, bump `version` in `package.json` (and `VERSION` in `landing/lib/downloads.ts`), then push a matching tag:
+
+```bash
+git tag v2.1.0 && git push origin v2.1.0
+```
+
+The workflow attaches the installers and a `SHA256SUMS.txt` to the GitHub Release.
+
+## Landing page
+
+`landing/` is a Next.js static site with Download for Windows / Download for macOS buttons that point at the release assets.
+
+```bash
+cd landing
+npm install
+npm run dev        # http://localhost:3000
+npm run build      # static export in landing/out
+```
+
+`.github/workflows/landing.yml` deploys it to GitHub Pages from `main` (enable once under *Settings → Pages → Source: GitHub Actions*).
+
+## Project layout
+
+```
+electron/        Electron main process (window, SQLite via sql.js) and preload bridge
+ui/              The app UI (HTML/CSS/JS), shared by every shell
+  js/core.js       bridge, SQL helpers, motion, toasts, modals, popovers
+  js/schema.js     metadata tables, column types, templates
+  js/auth.js       local accounts and profile
+  js/activity.js   activity log and reminders
+  js/table.js      table view, cell editors, column editor, record drawer
+  js/views.js      calendar and dashboard
+  js/io.js         new-sheet wizard, import and export
+  js/app.js        state, navigation, home and workspace views
+landing/         Next.js landing page
+src/main.swift   Optional native macOS shell (WKWebView); build with build_dmg.sh
+```
+
+## License
+
+MIT

@@ -1,9 +1,13 @@
-name: Build macOS Application & DMG
+name: Build desktop apps
+
+# Builds Tracker for Windows (installer + portable) and macOS (Apple Silicon + Intel).
+# Push a tag like v2.1.0 (matching package.json) to publish a GitHub Release.
 
 on:
   push:
     branches: [ "main" ]
     tags: [ "v*" ]
+    paths-ignore: [ "landing/**", "**.md" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -12,51 +16,85 @@ permissions:
   contents: write
 
 jobs:
-  build-macos:
-    name: Build Tracker App & DMG
-    runs-on: macos-14
+  build:
+    name: Build ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            target: --win --x64
+            files: |
+              dist/*.exe
+          - name: macOS
+            os: macos-14
+            target: --mac --arm64 --x64
+            files: |
+              dist/*.dmg
+              dist/*.zip
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: |
-          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-          swift --version
-
-      - name: Grant execution permission to build script
-        run: chmod +x build_dmg.sh
-
-      - name: Build Tracker.app and Tracker.dmg
-        run: ./build_dmg.sh
-
-      - name: Verify build artifacts
-        run: |
-          ls -lh Tracker.dmg
-          ls -la Tracker.app
-
-      - name: Upload Tracker DMG Artifact
-        uses: actions/upload-artifact@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          name: Tracker-macOS-DMG
-          path: Tracker.dmg
-          if-no-files-found: error
-          retention-days: 30
+          node-version: 22
+          cache: npm
 
-      - name: Upload Tracker App Bundle Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Tracker-App-Bundle
-          path: Tracker.app
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Create Release
+      - name: Check release tag matches app version
         if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          version="$(node -p 'require("./package.json").version')"
+          test "${GITHUB_REF_NAME#v}" = "$version" || {
+            echo "Tag $GITHUB_REF_NAME does not match package.json version $version" >&2
+            exit 1
+          }
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build ${{ matrix.name }} packages
+        run: npx electron-builder ${{ matrix.target }} --publish never
+        env:
+          # No signing certificates are configured: macOS builds are ad-hoc signed,
+          # Windows builds are unsigned.
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - name: List artifacts
+        shell: bash
+        run: ls -lh dist
+
+      - name: Upload ${{ matrix.name }} artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tracker-${{ matrix.name }}
+          path: ${{ matrix.files }}
+          if-no-files-found: error
+          retention-days: 30
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+
+      - name: Generate checksums
+        working-directory: release
+        run: sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
+
+      - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          files: Tracker.dmg
+          files: release/*
           generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
