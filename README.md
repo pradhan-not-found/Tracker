@@ -104,7 +104,9 @@ Each release includes `SHA256SUMS.txt` so you can verify your download.
 **First launch.** The builds are not code-signed yet.
 
 - **Windows:** if SmartScreen appears, choose **More info**, then **Run anyway**.
-- **macOS:** open the `.dmg`, drag Tracker to Applications, then the first time right-click Tracker and choose **Open**.
+- **macOS:** open the `.dmg` and drag Tracker to Applications. The Mac builds are not notarized by Apple yet, so the first time macOS says it *could not verify* Tracker: click **Done**, open **System Settings › Privacy & Security**, click **Open Anyway** next to Tracker and confirm. (On macOS 14 and earlier, right-click Tracker and choose **Open** also works.) Updates installed from inside Tracker don't ask again.
+
+  To remove the warning entirely, add an Apple Developer ID to the repository's Actions secrets (`MAC_CERT_P12_BASE64`, `MAC_CERT_PASSWORD`, `APPLE_ID`, `APPLE_APP_PASSWORD`, `APPLE_TEAM_ID`); the next release is then signed and notarized automatically.
 
 ## Your data is safe
 

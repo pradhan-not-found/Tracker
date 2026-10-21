@@ -91,7 +91,7 @@ export function firstLaunchSteps(b: Build): string[] {
   return [
     'Open the .dmg from your Downloads.',
     'Drag Tracker into the Applications folder.',
-    'The first time, right-click Tracker and choose Open.',
+    'First time only: if macOS can’t verify Tracker, choose Done, then System Settings › Privacy & Security › Open Anyway.',
   ]
 }
 

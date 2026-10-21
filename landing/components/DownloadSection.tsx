@@ -59,14 +59,14 @@ export function DownloadSection() {
                 <SplitDownload primary={macPrimary} label={`Download for ${macPrimary.label}`} options={macOptions} />
               </div>
               <p className="platform-note">
-                First launch: the macOS builds are unsigned, so right-click Tracker in Applications and choose{' '}
-                <em>Open</em>.
+                First launch: if macOS says it can’t verify Tracker, click <em>Done</em>, then open{' '}
+                <em>System Settings › Privacy &amp; Security</em> and choose <em>Open Anyway</em>. Only needed once.
               </p>
             </li>
           </ul>
           <p className="update-note">
-            <strong>Staying up to date:</strong> Tracker tells you when an update is available and asks before
-            installing it. Updates never touch your data.
+            <strong>Staying up to date:</strong> Tracker checks every time it opens and updates itself in a
+            moment. Updates never touch your data.
           </p>
           <p className="fallback">
             Download not starting? Every build is on the{' '}

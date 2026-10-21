@@ -14,11 +14,11 @@ export const faqs: FaqItem[] = [
   },
   {
     q: 'How do updates work?',
-    a: 'Tracker tells you when a new version is available and asks before installing anything. Updates replace the app only: your workspaces, sheets and files are never touched.',
+    a: 'Tracker checks for a new version every time it opens and shows it until you update. One click downloads it, and Tracker restarts and installs it by itself. Updates replace the app only: your workspaces, sheets and files are never touched.',
   },
   {
-    q: 'macOS says the app can’t be opened. What do I do?',
-    a: 'The macOS builds are not yet signed with an Apple Developer ID. On first launch, right-click (or Control-click) Tracker in Applications and choose Open, then confirm. After that it opens normally.',
+    q: 'macOS says Apple could not verify Tracker. What do I do?',
+    a: 'Tracker for Mac is not yet notarized by Apple, so macOS asks once. Click Done, open System Settings › Privacy & Security, scroll down and click Open Anyway next to Tracker, then confirm with your password. After that it opens normally, and updates from inside Tracker do not ask again.',
   },
   {
     q: 'Which Mac download do I need?',

@@ -68,12 +68,54 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build ${{ matrix.name }} packages
-        run: npx electron-builder ${{ matrix.target }} --publish never
+      # macOS signing and notarization switch on by themselves once these
+      # repository secrets exist (Settings > Secrets and variables > Actions):
+      #   MAC_CERT_P12_BASE64   Developer ID Application certificate (.p12), base64
+      #   MAC_CERT_PASSWORD     password of that .p12
+      #   APPLE_ID              Apple ID email of the developer account
+      #   APPLE_APP_PASSWORD    app-specific password for that Apple ID
+      #   APPLE_TEAM_ID         10-character team ID
+      # Without them, macOS builds are ad-hoc signed and Windows builds unsigned.
+      - name: Configure macOS signing
+        id: macsign
+        if: runner.os == 'macOS'
+        shell: bash
         env:
-          # No signing certificates are configured: macOS builds are ad-hoc signed,
-          # Windows builds are unsigned.
-          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+          MAC_CERT_P12_BASE64: ${{ secrets.MAC_CERT_P12_BASE64 }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          if [ -n "$MAC_CERT_P12_BASE64" ] && [ -n "$APPLE_ID" ] && [ -n "$APPLE_APP_PASSWORD" ] && [ -n "$APPLE_TEAM_ID" ]; then
+            node -e '
+              const fs = require("fs"); const p = "package.json"; const pkg = JSON.parse(fs.readFileSync(p, "utf8"));
+              const mac = pkg.build.mac; delete mac.identity;
+              Object.assign(mac, { hardenedRuntime: true, gatekeeperAssess: false, notarize: true,
+                entitlements: "assets/entitlements.mac.plist", entitlementsInherit: "assets/entitlements.mac.plist" });
+              fs.writeFileSync(p, JSON.stringify(pkg, null, 2));'
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+            echo "macOS builds will be signed with Developer ID and notarized."
+          else
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::macOS signing secrets not set: building ad-hoc signed (Gatekeeper will warn on first open)."
+          fi
+
+      - name: Build ${{ matrix.name }} packages
+        shell: bash
+        run: |
+          if [ "${{ steps.macsign.outputs.signed }}" = "true" ]; then
+            export CSC_LINK="$MAC_CERT_P12_BASE64" CSC_KEY_PASSWORD="$MAC_CERT_PASSWORD"
+            export APPLE_ID APPLE_APP_SPECIFIC_PASSWORD="$APPLE_APP_PASSWORD" APPLE_TEAM_ID
+          else
+            export CSC_IDENTITY_AUTO_DISCOVERY=false
+          fi
+          npx electron-builder ${{ matrix.target }} --publish never
+        env:
+          MAC_CERT_P12_BASE64: ${{ secrets.MAC_CERT_P12_BASE64 }}
+          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: List artifacts
         shell: bash
@@ -102,6 +144,10 @@ jobs:
             test -d "$mnt/Tracker.app"
             test -L "$mnt/Applications"
             codesign --verify --deep --strict --verbose=2 "$mnt/Tracker.app"
+            if [ "${{ steps.macsign.outputs.signed }}" = "true" ]; then
+              spctl --assess --type execute --verbose=2 "$mnt/Tracker.app"
+              xcrun stapler validate "$mnt/Tracker.app"
+            fi
             cp -R "$mnt/Tracker.app" "$RUNNER_TEMP/"
             hdiutil detach "$mnt" >/dev/null
             bin="$RUNNER_TEMP/Tracker.app/Contents/MacOS/Tracker"
